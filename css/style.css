@@ -476,7 +476,7 @@ html, body {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(96, 239, 255, 0.35);
 }
 
-/* Day Badges */
+/* Day Badges - Neutral & Quiet when Inactive */
 .pill-badge {
   font-size: 0.72rem;
   font-weight: 800;
@@ -490,20 +490,7 @@ html, body {
   transition: all 0.2s ease;
 }
 
-.pill-badge.pill-badge-festival,
-.event-pill[data-day="saturday"] .pill-badge,
-.event-pill[data-day="sunday"] .pill-badge {
-  color: var(--neon-green, #00FF87);
-  background: rgba(0, 255, 135, 0.14);
-}
-
-.pill-badge.pill-badge-club,
-.event-pill[data-day="friday_pre"] .pill-badge,
-.event-pill[data-day="saturday_after"] .pill-badge {
-  color: var(--neon-cyan, #60EFFF);
-  background: rgba(96, 239, 255, 0.14);
-}
-
+/* Active State: Festival Badges (Solid Neon Green) */
 .event-pill.active .pill-badge,
 .event-pill[data-day="saturday"].active .pill-badge,
 .event-pill[data-day="sunday"].active .pill-badge {
@@ -512,6 +499,7 @@ html, body {
   font-weight: 800;
 }
 
+/* Active State: Club Badges (Solid Neon Cyan) */
 .event-pill[data-day="friday_pre"].active .pill-badge,
 .event-pill[data-day="saturday_after"].active .pill-badge {
   background: var(--neon-cyan, #60EFFF) !important;
