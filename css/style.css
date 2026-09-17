@@ -21,6 +21,9 @@
   --forest-green: #40916c;
   --neon-green-glow: rgba(0, 255, 135, 0.35);
   --neon-green-subtle: rgba(0, 255, 135, 0.12);
+  --neon-cyan: #60EFFF;
+  --neon-cyan-glow: rgba(96, 239, 255, 0.35);
+  --neon-cyan-subtle: rgba(96, 239, 255, 0.12);
 
   --stage-mainstage: #00FF87;
   --stage-f2f: #60EFFF;
@@ -487,15 +490,22 @@ html, body {
   transition: all 0.2s ease;
 }
 
+.pill-badge.pill-badge-club {
+  color: var(--neon-cyan, #60EFFF);
+  background: rgba(96, 239, 255, 0.14);
+}
+
 .event-pill.active .pill-badge {
-  background: var(--neon-green);
-  color: #000000;
+  background: var(--neon-green, #00FF87) !important;
+  color: #060a08 !important;
+  font-weight: 800;
 }
 
 .event-pill[data-day="friday_pre"].active .pill-badge,
 .event-pill[data-day="saturday_after"].active .pill-badge {
-  background: var(--neon-cyan);
-  color: #000000;
+  background: var(--neon-cyan, #60EFFF) !important;
+  color: #060a08 !important;
+  font-weight: 800;
 }
 
 .pill-meta {
