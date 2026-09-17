@@ -355,7 +355,65 @@ class RheingruenApp {
   loadFavorites() {
     try {
       const stored = localStorage.getItem("rg_favorites_2026");
-      return stored ? new Set(JSON.parse(stored)) : new Set();
+      if (!stored) return new Set();
+      const rawList = JSON.parse(stored);
+      if (!Array.isArray(rawList)) return new Set();
+
+      // Migration map for older slot-based IDs (sat-m-1 -> sat-saika etc.)
+      const LEGACY_ID_MAP = {
+        "sat-m-1": "sat-saika",
+        "sat-m-2": "sat-lola-cerise-gustav-organo",
+        "sat-m-3": "sat-dasstudach",
+        "sat-m-4": "sat-kander",
+        "sat-m-5": "sat-ush-slvl",
+        "sat-m-6": "sat-vieze-asbak",
+        "sat-m-7": "sat-natte-visstick-jowi",
+        "sat-f-1": "sat-dj-blush-lensch",
+        "sat-f-2": "sat-rot-ton-dj-sexstasy",
+        "sat-f-3": "sat-dj-hyperdrive-laure-croft",
+        "sat-f-4": "sat-elli-acula-mac-declos",
+        "sat-f-5": "sat-alarico-shdw",
+        "sat-f-6": "sat-future-666-fenim0re",
+        "sat-h-1": "sat-antigen-lilli-4love",
+        "sat-h-2": "sat-the-muffin-man-alycia-bezgo",
+        "sat-h-3": "sat-trancemaster-krause-bixbita",
+        "sat-h-4": "sat-davyboi-peterblue",
+        "sat-h-5": "sat-mika-heggemann-cleopard2000",
+        "sun-m-1": "sun-ponti",
+        "sun-m-2": "sun-kotorri",
+        "sun-m-3": "sun-schrotthagen",
+        "sun-m-4": "sun-nicolas-julian",
+        "sun-m-5": "sun-nikolina",
+        "sun-m-6": "sun-vendex",
+        "sun-m-7": "sun-jazzy",
+        "sun-m-8": "sun-surprise-closing",
+        "sun-f-1": "sun-dvaid-relajadita",
+        "sun-f-2": "sun-wilderich-zwilling",
+        "sun-f-3": "sun-l-zwo-antonym",
+        "sun-f-4": "sun-noise-mafia-fenrick",
+        "sun-f-5": "sun-cloudy-serafina",
+        "sun-f-6": "sun-adrian-mills-prada2000",
+        "sun-h-1": "sun-tamara-wirth",
+        "sun-h-2": "sun-dj-swisherman",
+        "sun-h-3": "sun-frederic-stef-de-haan",
+        "sun-h-4": "sun-aerea",
+        "sun-h-5": "sun-dax-j"
+      };
+
+      let migrated = false;
+      const cleanList = rawList.map(id => {
+        if (LEGACY_ID_MAP[id]) {
+          migrated = true;
+          return LEGACY_ID_MAP[id];
+        }
+        return id;
+      });
+
+      if (migrated) {
+        localStorage.setItem("rg_favorites_2026", JSON.stringify(cleanList));
+      }
+
+      return new Set(cleanList);
     } catch {
       return new Set();
     }
