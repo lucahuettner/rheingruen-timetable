@@ -1,7 +1,7 @@
 {
   "name": "Rheingrün Festival Timetable",
   "short_name": "Rheingrün",
-  "description": "Offizieller Zeitplan für das Rheingrün Festival 2026. Funktioniert offline mit Live-Uhrzeitanzeige.",
+  "description": "Festival-Zeitplan für das Rheingrün Festival 2026. Funktioniert offline mit Live-Uhrzeitanzeige.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
