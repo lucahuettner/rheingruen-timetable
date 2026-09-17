@@ -786,7 +786,6 @@ class RheingruenApp {
       headerItem.className = `stage-header-item header-${stage.id}`;
       headerItem.innerHTML = `
         <span class="stage-header-name">${stage.name}</span>
-        <span class="stage-header-count">${filteredActs.length} ${filteredActs.length === 1 ? "Act" : "Acts"}</span>
       `;
       this.stageHeadersList.appendChild(headerItem);
 
