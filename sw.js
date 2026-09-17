@@ -3,11 +3,12 @@
  * Cache-First Strategy with Network Fallback
  */
 
-const CACHE_NAME = "rheingruen-timetable-v2";
+const CACHE_NAME = "rheingruen-timetable-v3";
 
 const PRECACHE_ASSETS = [
   "./",
   "./index.html",
+  "./favicon.ico",
   "./css/style.css",
   "./js/schedule-data.js",
   "./js/app.js",
@@ -17,6 +18,7 @@ const PRECACHE_ASSETS = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/favicon-32x32.png",
+  "./icons/favicon-16x16.png",
   "./icons/apple-touch-icon.png"
 ];
 
@@ -56,7 +58,7 @@ self.addEventListener("fetch", (event) => {
   // Handle same-origin requests
   if (url.origin === self.location.origin) {
     event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
+      caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
         if (cachedResponse) {
           // Return cache, optionally revalidate in background
           fetch(event.request)
