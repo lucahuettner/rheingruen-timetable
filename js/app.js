@@ -21,14 +21,8 @@ class RheingruenApp {
     // Favorites (persisted in localStorage)
     this.favorites = this.loadFavorites();
 
-    // Time & Simulation State
-    const dayConf = this.getCurrentDayConfig();
-    const deviceMinutes = this.calculateCurrentMinutes();
-    const isWithinHours = this.isWithinDayHours(deviceMinutes, dayConf);
-    const isActualTime = this.isActualFestivalDay(dayConf.id) && isWithinHours;
-    this.simulationActive = !isActualTime; // Auto-activate demo if opened outside live festival hours
-    this.simulatedMinutes = dayConf.isOvernight ? 1410 : 930; // 23:30 for overnight, 15:30 for daytime
-    this.nowMinutes = this.simulationActive ? this.simulatedMinutes : deviceMinutes;
+    // Time & Clock State (Always reflect real current device time of day)
+    this.nowMinutes = this.calculateCurrentMinutes();
 
     // Cache DOM Elements
     this.initDOMElements();
@@ -273,9 +267,6 @@ class RheingruenApp {
   }
 
   calculateCurrentMinutes() {
-    if (this.simulationActive) {
-      return this.simulatedMinutes;
-    }
     const now = new Date();
     return now.getHours() * 60 + now.getMinutes();
   }
@@ -556,12 +547,6 @@ class RheingruenApp {
 
     const dayConf = this.getCurrentDayConfig();
     this.currentCategory = dayConf.category || "festival";
-
-    // Adjust simulated minutes for selected day if demo simulation is active
-    if (this.simulationActive) {
-      this.simulatedMinutes = dayConf.isOvernight ? 1410 : 930;
-      this.nowMinutes = this.simulatedMinutes;
-    }
 
     this.updatePillsUI(day);
 
@@ -1003,17 +988,7 @@ class RheingruenApp {
     const startMins = this.timeToMinutes(act.start, isOvernight);
     const endMins = this.timeToMinutes(act.end, isOvernight);
 
-    // If simulation active: live on current displayed day
-    if (this.simulationActive) {
-      return currentMins >= startMins && currentMins < endMins;
-    }
-
-    // If on actual event day, or if testing before festival
-    if (this.isActualFestivalDay(actDay) || !this.isActualFestivalWeekend()) {
-      return currentMins >= startMins && currentMins < endMins;
-    }
-
-    return false;
+    return currentMins >= startMins && currentMins < endMins;
   }
 
   isActualFestivalWeekend() {
