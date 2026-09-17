@@ -397,114 +397,132 @@ html, body {
   border-color: #F59E0B;
 }
 
-/* Category Segmented Tabs (Festival vs Club) */
-.category-tabs-nav {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  background: rgba(14, 20, 16, 0.85);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 3px;
-  gap: 4px;
-}
-
-.category-tab {
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  padding: 7px 12px;
-  color: var(--text-secondary);
-  font-weight: 700;
-  font-size: 0.82rem;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.2s ease;
+/* ==========================================================================
+   Single Unified Event Switcher (Event Pills Nav)
+   Mobile: Horizontal scrollable track with full-size, touch-friendly buttons
+   Tablet/Desktop: 4-column balanced grid
+   ========================================================================== */
+.event-pills-nav {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  align-items: stretch;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  padding: 2px 2px;
+  margin: 0;
+  width: 100%;
 }
 
-.category-tab:active {
-  transform: scale(0.98);
+.event-pills-nav::-webkit-scrollbar {
+  display: none;
 }
 
-.category-tab.active {
-  background: var(--bg-surface-elevated);
-  color: var(--neon-green);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(0, 255, 135, 0.35);
+@media (min-width: 768px) {
+  .event-pills-nav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    overflow-x: visible;
+  }
 }
 
-.category-tab[data-category="club"].active {
-  color: var(--neon-cyan);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(96, 239, 255, 0.35);
-}
-
-/* Day Segmented Tabs */
-.day-tabs-nav {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.event-pill {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  min-height: 48px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 3px;
-  gap: 4px;
-}
-
-.day-tab {
-  background: transparent;
-  border: none;
-  border-radius: 9px;
-  padding: 8px 12px;
+  padding: 6px 14px;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
 }
 
-.day-tab.active {
+.event-pill:hover {
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.event-pill:active {
+  transform: scale(0.97);
+}
+
+/* Active State - Festival (Neon Green) */
+.event-pill.active {
   background: var(--bg-surface-elevated);
   color: var(--neon-green);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(0, 255, 135, 0.3);
+  border-color: rgba(0, 255, 135, 0.5);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(0, 255, 135, 0.35);
 }
 
-#subnav-club .day-tab.active {
+/* Active State - Club (Neon Cyan) */
+.event-pill[data-day="friday_pre"].active,
+.event-pill[data-day="saturday_after"].active {
   color: var(--neon-cyan);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(96, 239, 255, 0.35);
+  border-color: rgba(96, 239, 255, 0.5);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(96, 239, 255, 0.35);
 }
 
-#subnav-club .day-tab.active .tab-badge-club {
-  background: var(--neon-cyan);
-  color: #000000;
-}
-
-.tab-badge {
-  font-size: 0.7rem;
+/* Day Badges */
+.pill-badge {
+  font-size: 0.72rem;
   font-weight: 800;
+  letter-spacing: 0.5px;
   background: rgba(255, 255, 255, 0.08);
-  padding: 2px 6px;
-  border-radius: 4px;
+  color: var(--text-secondary);
+  padding: 4px 6px;
+  border-radius: 6px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
 }
 
-.day-tab.active .tab-badge {
+.event-pill.active .pill-badge {
   background: var(--neon-green);
   color: #000000;
 }
 
-.tab-title {
-  font-weight: 800;
-  font-size: 0.95rem;
-  letter-spacing: 0.5px;
+.event-pill[data-day="friday_pre"].active .pill-badge,
+.event-pill[data-day="saturday_after"].active .pill-badge {
+  background: var(--neon-cyan);
+  color: #000000;
 }
 
-.tab-date {
-  font-size: 0.75rem;
-  opacity: 0.7;
+.pill-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pill-title {
+  font-weight: 800;
+  font-size: 0.88rem;
+  letter-spacing: 0.3px;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.pill-sub {
+  font-size: 0.72rem;
   font-weight: 500;
+  opacity: 0.75;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.event-pill.active .pill-sub {
+  opacity: 0.9;
 }
 
 /* Sub-Controls Row: Compact Search & View Switcher */

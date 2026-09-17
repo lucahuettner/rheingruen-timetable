@@ -69,41 +69,35 @@
         </div>
       </div>
 
-      <!-- Category Segmented Switcher (Festival vs Club) -->
-      <nav class="category-tabs-nav" aria-label="Event-Kategorie">
-        <button class="category-tab active" data-category="festival" id="tab-category-festival">
-          <span class="category-title">Festival</span>
+      <!-- Unified Event & Day Switcher (Single Full-Sized Row) -->
+      <nav class="event-pills-nav" id="event-pills-nav" aria-label="Event- und Tagesauswahl">
+        <button class="event-pill" data-day="friday_pre" id="tab-friday-pre">
+          <span class="pill-badge pill-badge-club">FR</span>
+          <div class="pill-meta">
+            <span class="pill-title">Pre-Party</span>
+            <span class="pill-sub">Gotec</span>
+          </div>
         </button>
-        <button class="category-tab" data-category="club" id="tab-category-club">
-          <span class="category-title">Club</span>
+        <button class="event-pill active" data-day="saturday" id="tab-saturday">
+          <span class="pill-badge">SA</span>
+          <div class="pill-meta">
+            <span class="pill-title">Festival</span>
+            <span class="pill-sub">19. SEP</span>
+          </div>
         </button>
-      </nav>
-
-      <!-- Day Segmented Switcher (Festival) -->
-      <nav class="day-tabs-nav" id="subnav-festival" aria-label="Festival Tage">
-        <button class="day-tab active" data-day="saturday" id="tab-saturday">
-          <span class="tab-badge">SA</span>
-          <span class="tab-title">Samstag</span>
-          <span class="tab-date">19. SEP</span>
+        <button class="event-pill" data-day="saturday_after" id="tab-saturday-after">
+          <span class="pill-badge pill-badge-club">SA</span>
+          <div class="pill-meta">
+            <span class="pill-title">Aftershow</span>
+            <span class="pill-sub">Gotec &amp; Elfino</span>
+          </div>
         </button>
-        <button class="day-tab" data-day="sunday" id="tab-sunday">
-          <span class="tab-badge">SO</span>
-          <span class="tab-title">Sonntag</span>
-          <span class="tab-date">20. SEP</span>
-        </button>
-      </nav>
-
-      <!-- Day Segmented Switcher (Club) -->
-      <nav class="day-tabs-nav hidden" id="subnav-club" aria-label="Club Events">
-        <button class="day-tab" data-day="friday_pre" id="tab-friday-pre">
-          <span class="tab-badge tab-badge-club">FR</span>
-          <span class="tab-title">Pre-Party</span>
-          <span class="tab-date">Gotec</span>
-        </button>
-        <button class="day-tab" data-day="saturday_after" id="tab-saturday-after">
-          <span class="tab-badge tab-badge-club">SA</span>
-          <span class="tab-title">Aftershow</span>
-          <span class="tab-date">Gotec &amp; Elfino</span>
+        <button class="event-pill" data-day="sunday" id="tab-sunday">
+          <span class="pill-badge">SO</span>
+          <div class="pill-meta">
+            <span class="pill-title">Festival</span>
+            <span class="pill-sub">20. SEP</span>
+          </div>
         </button>
       </nav>
 

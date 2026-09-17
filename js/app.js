@@ -35,6 +35,9 @@ class RheingruenApp {
     // Setup Event Listeners
     this.initEventListeners();
 
+    // Initialize Active Tab & Navigation UI
+    this.updatePillsUI(this.currentDay);
+
     // Initialize UI
     this.initTimelineGrid();
     this.render();
@@ -102,17 +105,13 @@ class RheingruenApp {
     this.disclaimerModal = document.getElementById("disclaimer-modal");
     this.btnDismissDisclaimer = document.getElementById("btn-dismiss-disclaimer");
 
-    // Category Navigation (Festival vs Club)
-    this.tabCategoryFestival = document.getElementById("tab-category-festival");
-    this.tabCategoryClub = document.getElementById("tab-category-club");
-    this.subnavFestival = document.getElementById("subnav-festival");
-    this.subnavClub = document.getElementById("subnav-club");
-
-    // Day & Event Navigation
-    this.tabSaturday = document.getElementById("tab-saturday");
-    this.tabSunday = document.getElementById("tab-sunday");
+    // Day & Event Navigation (Single Unified Bar)
+    this.eventPillsNav = document.getElementById("event-pills-nav");
     this.tabFridayPre = document.getElementById("tab-friday-pre");
+    this.tabSaturday = document.getElementById("tab-saturday");
     this.tabSaturdayAfter = document.getElementById("tab-saturday-after");
+    this.tabSunday = document.getElementById("tab-sunday");
+    this.eventPillTabs = [this.tabFridayPre, this.tabSaturday, this.tabSaturdayAfter, this.tabSunday].filter(Boolean);
     this.btnViewGrid = document.getElementById("view-grid-btn");
     this.btnViewList = document.getElementById("view-list-btn");
 
@@ -285,19 +284,11 @@ class RheingruenApp {
       isSyncingBody = false;
     }, { passive: true });
 
-    // Category Tabs (Festival vs Club)
-    if (this.tabCategoryFestival) {
-      this.tabCategoryFestival.addEventListener("click", () => this.setCategory("festival"));
-    }
-    if (this.tabCategoryClub) {
-      this.tabCategoryClub.addEventListener("click", () => this.setCategory("club"));
-    }
-
-    // Day & Event Tabs
-    if (this.tabSaturday) this.tabSaturday.addEventListener("click", () => this.setDay("saturday"));
-    if (this.tabSunday) this.tabSunday.addEventListener("click", () => this.setDay("sunday"));
+    // Day & Event Pills Navigation
     if (this.tabFridayPre) this.tabFridayPre.addEventListener("click", () => this.setDay("friday_pre"));
+    if (this.tabSaturday) this.tabSaturday.addEventListener("click", () => this.setDay("saturday"));
     if (this.tabSaturdayAfter) this.tabSaturdayAfter.addEventListener("click", () => this.setDay("saturday_after"));
+    if (this.tabSunday) this.tabSunday.addEventListener("click", () => this.setDay("sunday"));
 
     // View Switcher (Grid vs List)
     this.btnViewGrid.addEventListener("click", () => this.setViewMode("grid"));
@@ -469,16 +460,19 @@ class RheingruenApp {
   // --------------------------------------------------------------------------
   // State Setters
   // --------------------------------------------------------------------------
+  updatePillsUI(day = this.currentDay) {
+    if (!this.eventPillTabs) return;
+    this.eventPillTabs.forEach((pill) => {
+      const isActive = pill.dataset.day === day;
+      pill.classList.toggle("active", isActive);
+      if (isActive) {
+        // Smoothly bring active pill into view on mobile horizontal scroll
+        pill.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      }
+    });
+  }
+
   setCategory(category) {
-    if (this.currentCategory === category) return;
-    this.currentCategory = category;
-
-    if (this.tabCategoryFestival) this.tabCategoryFestival.classList.toggle("active", category === "festival");
-    if (this.tabCategoryClub) this.tabCategoryClub.classList.toggle("active", category === "club");
-
-    if (this.subnavFestival) this.subnavFestival.classList.toggle("hidden", category !== "festival");
-    if (this.subnavClub) this.subnavClub.classList.toggle("hidden", category !== "club");
-
     if (category === "festival") {
       this.setDay("saturday");
     } else {
@@ -491,19 +485,9 @@ class RheingruenApp {
     this.currentDay = day;
 
     const dayConf = this.getCurrentDayConfig();
-    const category = dayConf.category || "festival";
-    if (this.currentCategory !== category) {
-      this.currentCategory = category;
-      if (this.tabCategoryFestival) this.tabCategoryFestival.classList.toggle("active", category === "festival");
-      if (this.tabCategoryClub) this.tabCategoryClub.classList.toggle("active", category === "club");
-      if (this.subnavFestival) this.subnavFestival.classList.toggle("hidden", category !== "festival");
-      if (this.subnavClub) this.subnavClub.classList.toggle("hidden", category !== "club");
-    }
+    this.currentCategory = dayConf.category || "festival";
 
-    if (this.tabSaturday) this.tabSaturday.classList.toggle("active", day === "saturday");
-    if (this.tabSunday) this.tabSunday.classList.toggle("active", day === "sunday");
-    if (this.tabFridayPre) this.tabFridayPre.classList.toggle("active", day === "friday_pre");
-    if (this.tabSaturdayAfter) this.tabSaturdayAfter.classList.toggle("active", day === "saturday_after");
+    this.updatePillsUI(day);
 
     // Rebuild timeline grid for the newly selected day/hours
     this.initTimelineGrid();
