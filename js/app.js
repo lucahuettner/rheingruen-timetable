@@ -44,6 +44,9 @@ class RheingruenApp {
       this.updateLiveIndicator();
     }, 10000);
 
+    // Check first-visit disclaimer
+    this.checkDisclaimer();
+
     // Register Service Worker for PWA
     this.initServiceWorker();
     this.initPWAInstallPrompt();
@@ -80,6 +83,10 @@ class RheingruenApp {
     this.infoModal = document.getElementById("info-modal");
     this.infoModalBackdrop = document.getElementById("info-modal-backdrop");
     this.infoModalCloseBtn = document.getElementById("info-modal-close-btn");
+
+    // First-Visit Disclaimer
+    this.disclaimerModal = document.getElementById("disclaimer-modal");
+    this.btnDismissDisclaimer = document.getElementById("btn-dismiss-disclaimer");
 
     // Day & View Navigation
     this.tabSaturday = document.getElementById("tab-saturday");
@@ -282,6 +289,11 @@ class RheingruenApp {
     }
     if (this.infoModalBackdrop) {
       this.infoModalBackdrop.addEventListener("click", () => this.closeInfoModal());
+    }
+
+    // First-Visit Disclaimer Button
+    if (this.btnDismissDisclaimer) {
+      this.btnDismissDisclaimer.addEventListener("click", () => this.dismissDisclaimer());
     }
 
     window.addEventListener("keydown", (e) => {
@@ -856,6 +868,33 @@ class RheingruenApp {
   closeInfoModal() {
     if (this.infoModal) {
       this.infoModal.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // First-Visit Disclaimer
+  // --------------------------------------------------------------------------
+  checkDisclaimer() {
+    try {
+      const isDismissed = localStorage.getItem("rg_disclaimer_dismissed");
+      if (!isDismissed && this.disclaimerModal) {
+        this.disclaimerModal.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+    } catch (e) {
+      console.warn("Could not check disclaimer", e);
+    }
+  }
+
+  dismissDisclaimer() {
+    try {
+      localStorage.setItem("rg_disclaimer_dismissed", "true");
+    } catch (e) {
+      console.warn("Could not save disclaimer preference", e);
+    }
+    if (this.disclaimerModal) {
+      this.disclaimerModal.classList.add("hidden");
       document.body.style.overflow = "";
     }
   }
