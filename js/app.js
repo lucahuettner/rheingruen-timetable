@@ -934,7 +934,7 @@ class RheingruenApp {
 
         <div class="list-info-block">
           <div class="list-artist-title">${act.artist}</div>
-          <span class="list-stage-label ${act.stage}">${dayPrefix}${act.stageConfig.name}</span>
+          <span class="list-stage-label stage-${act.stage}" style="color: ${act.stageConfig.color};">${dayPrefix}${act.stageConfig.name}</span>
           ${act.isSpecial ? ` <span class="card-special-badge">Special Closing</span>` : ""}
         </div>
 

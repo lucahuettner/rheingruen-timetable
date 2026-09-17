@@ -1304,13 +1304,19 @@ html, body {
   text-transform: uppercase;
 }
 
+.list-stage-label.stage-mainstage,
 .list-stage-label.mainstage { color: var(--stage-mainstage); }
+.list-stage-label.stage-f2f,
 .list-stage-label.f2f { color: var(--stage-f2f); }
-.list-stage-label.hidden { color: var(--stage-hidden); }
+.list-stage-label.stage-hidden { color: var(--stage-hidden); }
+.list-stage-label.stage-gotec_main,
 .list-stage-label.gotec_main { color: var(--stage-mainstage); }
+.list-stage-label.stage-gotec_boiler,
 .list-stage-label.gotec_boiler { color: var(--stage-f2f); }
+.list-stage-label.stage-gotec_cube,
 .list-stage-label.gotec_cube { color: var(--stage-hidden); }
-.list-stage-label.elfino { color: #FF7170; }
+.list-stage-label.stage-elfino,
+.list-stage-label.elfino { color: #F59E0B; }
 
 /* --------------------------------------------------------------------------
    EMPTY STATE
