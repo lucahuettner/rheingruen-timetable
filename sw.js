@@ -3,7 +3,7 @@
  * Cache-First Strategy with Network Fallback
  */
 
-const CACHE_NAME = "rheingruen-timetable-v1";
+const CACHE_NAME = "rheingruen-timetable-v2";
 
 const PRECACHE_ASSETS = [
   "./",
@@ -15,7 +15,9 @@ const PRECACHE_ASSETS = [
   "./icons/icon.svg",
   "./icons/logo-white.png",
   "./icons/icon-192.png",
-  "./icons/icon-512.png"
+  "./icons/icon-512.png",
+  "./icons/favicon-32x32.png",
+  "./icons/apple-touch-icon.png"
 ];
 
 // Install: Precache all essential assets
