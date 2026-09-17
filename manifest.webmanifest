@@ -1,0 +1,56 @@
+{
+  "name": "Rheingrün Festival Timetable",
+  "short_name": "Rheingrün",
+  "description": "Offizieller Zeitplan für das Rheingrün Festival 2026. Funktioniert offline mit Live-Uhrzeitanzeige.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#050907",
+  "theme_color": "#050907",
+  "lang": "de-DE",
+  "categories": ["music", "entertainment", "events"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Samstag Timetable",
+      "short_name": "Samstag",
+      "description": "Samstag Zeitplan ansehen",
+      "url": "./index.html?day=saturday",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sonntag Timetable",
+      "short_name": "Sonntag",
+      "description": "Sonntag Zeitplan ansehen",
+      "url": "./index.html?day=sunday",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="Offizieller Zeitplan für das Rheingrün Festival 2026. Offline-fähige PWA mit Live-Uhrzeit-Linie, Stages und Favoriten.">
+  <meta name="theme-color" content="#050907">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rheingrün">
+  
+  <title>Rheingrün Festival 2026 – Timetable</title>
+  
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-main">
+        <div class="brand">
+          <div class="brand-logo-wrap">
+            <img src="icons/logo-white.png" alt="Rheingrün Logo" class="brand-icon" width="28" height="34">
+          </div>
+          <div class="brand-text">
+            <h1 class="brand-title">RHEINGRÜN</h1>
+            <span class="brand-subtitle">OPEN AIR · 19.–20. SEP</span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <!-- Jump To Now Button -->
+          <button id="btn-jump-now" class="action-btn btn-now" title="Zur aktuellen Uhrzeit springen" aria-label="Zur aktuellen Uhrzeit springen">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span class="btn-text">Jetzt</span>
+            <span id="header-now-badge" class="badge-mini-time">--:--</span>
+          </button>
+
+          <!-- Favorites Filter Toggle -->
+          <button id="btn-fav-filter" class="action-btn btn-fav-filter" title="Nur Favoriten anzeigen" aria-label="Nur Favoriten anzeigen">
+            <svg class="btn-icon star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            <span id="fav-count-badge" class="fav-count-badge hidden">0</span>
+          </button>
+
+          <!-- Hidden/Optional Install App Button (PWA) -->
+          <button id="btn-pwa-install" class="action-btn btn-install hidden" title="App installieren" aria-label="App installieren">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span class="btn-text">Install</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Day Segmented Switcher -->
+      <nav class="day-tabs-nav" aria-label="Tagesauswahl">
+        <button class="day-tab active" data-day="saturday" id="tab-saturday">
+          <span class="tab-badge">SA</span>
+          <span class="tab-title">Samstag</span>
+          <span class="tab-date">19. SEP</span>
+        </button>
+        <button class="day-tab" data-day="sunday" id="tab-sunday">
+          <span class="tab-badge">SO</span>
+          <span class="tab-title">Sonntag</span>
+          <span class="tab-date">20. SEP</span>
+        </button>
+      </nav>
+
+      <!-- Compact Search & View Switcher Row -->
+      <div class="sub-controls-row">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="artist-search" placeholder="Act suchen..." autocomplete="off" spellcheck="false">
+          <button id="search-clear" class="search-clear-btn hidden" aria-label="Suche leeren">✕</button>
+        </div>
+
+        <div class="view-switcher-group" role="group" aria-label="Ansicht wählen">
+          <button id="view-grid-btn" class="view-switch-btn active" title="Tabelle" aria-label="Tabelle">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span class="view-label">Tabelle</span>
+          </button>
+          <button id="view-list-btn" class="view-switch-btn" title="Liste" aria-label="Liste">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+            <span class="view-label">Liste</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="filter-status-hint" class="filter-status-hint hidden">
+        <span id="filter-hint-text"></span>
+        <button id="btn-reset-filters" class="btn-reset-link">Zurücksetzen</button>
+      </div>
+    </header>
+
+    <!-- Main Content Area: Grid / Table View -->
+    <main class="timetable-viewport" id="timetable-viewport">
+      <!-- Grid View (Default) -->
+      <div id="grid-view-container" class="grid-view-container">
+        <!-- Sticky Stage Headers Row -->
+        <div class="stage-headers-track" id="stage-headers-track">
+          <div class="time-axis-corner" aria-hidden="true">
+            <span class="corner-label">ZEIT</span>
+          </div>
+          <div class="stage-headers-list" id="stage-headers-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Timetable Body: Left Sticky Time Axis + Stage Swimlanes -->
+        <div class="timetable-body" id="timetable-body">
+          <!-- Time Axis Column (Sticky Left) -->
+          <div class="time-axis-column" id="time-axis-column" aria-hidden="true">
+            <!-- Rendered dynamically (11:00 to 23:00) -->
+          </div>
+
+          <!-- Stages Columns Container (Horizontally Scrollable on Mobile) -->
+          <div class="stages-columns-container" id="stages-columns-container">
+            <div class="stages-scroll-content" id="stages-scroll-content">
+              <!-- Grid Background Lines -->
+              <div class="grid-background-lines" id="grid-background-lines" aria-hidden="true"></div>
+
+              <!-- Current Time Line Indicator -->
+              <div class="now-indicator-line" id="now-indicator-line">
+                <div class="now-line-badge">
+                  <span class="now-pulse-dot"></span>
+                  <span id="now-line-text" class="now-line-time">--:--</span>
+                  <span class="now-line-label">JETZT</span>
+                </div>
+                <div class="now-line-bar"></div>
+              </div>
+
+              <!-- Stage Columns -->
+              <div class="stages-grid-columns" id="stages-grid-columns">
+                <!-- Rendered dynamically per day -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- List View (Alternative View) -->
+      <div id="list-view-container" class="list-view-container hidden">
+        <div class="list-cards-wrapper" id="list-cards-wrapper">
+          <!-- Rendered dynamically in chronological order -->
+        </div>
+      </div>
+
+      <!-- Empty State (e.g. no favorites match filter) -->
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </div>
+        <h3 class="empty-state-title">Keine Acts gefunden</h3>
+        <p class="empty-state-desc" id="empty-state-desc">Markiere Acts mit dem Herz-Symbol, um deinen persönlichen Zeitplan zusammenzustellen.</p>
+        <button id="empty-reset-btn" class="btn-neon-outline">Alle Acts anzeigen</button>
+      </div>
+    </main>
+
+    <!-- Act Details Modal / Bottom Sheet -->
+    <div id="act-modal" class="act-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-artist">
+      <div class="act-modal-backdrop" id="modal-backdrop"></div>
+      <div class="act-modal-sheet">
+        <div class="modal-drag-handle" aria-hidden="true"></div>
+        <button class="modal-close-btn" id="modal-close-btn" aria-label="Schließen">✕</button>
+
+        <div class="modal-header">
+          <div class="modal-stage-badge" id="modal-stage-badge">MAINSTAGE</div>
+          <h2 class="modal-artist" id="modal-artist">ARTIST NAME</h2>
+          <div class="modal-time-row">
+            <span class="modal-time" id="modal-time">14:30 – 16:00</span>
+            <span class="modal-duration" id="modal-duration">(90 Min.)</span>
+            <span class="modal-live-pill hidden" id="modal-live-pill">● JETZT LIVE</span>
+          </div>
+        </div>
+
+        <div class="modal-body">
+          <div class="modal-status-card" id="modal-status-card">
+            <span class="status-icon" id="modal-status-icon">⏳</span>
+            <span class="status-text" id="modal-status-text">Startet in 45 Minuten</span>
+          </div>
+
+          <div class="modal-clash-warning hidden" id="modal-clash-warning">
+            <div class="clash-icon">⚠️</div>
+            <div class="clash-content">
+              <strong>Zeitplan-Überschneidung!</strong>
+              <p id="modal-clash-text">Kollidiert mit deinem Favoriten XY auf der F2F Stage.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="modal-fav-btn" class="modal-btn-favorite">
+            <svg class="modal-heart-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            <span id="modal-fav-text">Zu meinen Favoriten</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Festival Info Sheet Modal -->
+    <div id="info-modal" class="act-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="info-modal-title">
+      <div class="act-modal-backdrop" id="info-modal-backdrop"></div>
+      <div class="act-modal-sheet info-modal-sheet">
+        <div class="modal-drag-handle" aria-hidden="true"></div>
+        <button class="modal-close-btn" id="info-modal-close-btn" aria-label="Schließen">✕</button>
+
+        <div class="modal-header">
+          <div class="modal-stage-badge" style="background:rgba(64,145,108,0.2);color:#00FF87;">TELETECH PRESENTS</div>
+          <h2 class="modal-artist" id="info-modal-title">RHEINGRÜN OPEN AIR 2026</h2>
+          <div class="info-genres">Hard Techno · Industrial · Bouncy · Trancy · Groove</div>
+        </div>
+
+        <div class="modal-body info-modal-body">
+          <div class="info-card location-card">
+            <div class="info-card-icon">📍</div>
+            <div class="info-card-text">
+              <strong>Peter-Gross-Bau Areal</strong>
+              <span>Karlsruhe-Rheinstetten (19. + 20. September 2026)</span>
+            </div>
+          </div>
+
+          <div class="info-grid">
+            <div class="info-fact-item">
+              <span class="fact-icon">💳</span>
+              <div>
+                <strong>Cashless Only</strong>
+                <p>Auf dem gesamten Festivalgelände kann ausschließlich bargeldlos mit EC- oder Kreditkarte bezahlt werden.</p>
+              </div>
+            </div>
+
+            <div class="info-fact-item">
+              <span class="fact-icon">💧</span>
+              <div>
+                <strong>Free Water</strong>
+                <p>Kostenlose Wasserstellen zur Erfrischung auf dem Gelände vorhanden.</p>
+              </div>
+            </div>
+
+            <div class="info-fact-item">
+              <span class="fact-icon">🚌</span>
+              <div>
+                <strong>Anreise & Parken</strong>
+                <p>Parkflächen direkt an der Messe Karlsruhe. Festival-Shuttle verkehrt an beiden Tagen.</p>
+              </div>
+            </div>
+
+            <div class="info-fact-item">
+              <span class="fact-icon">⛺</span>
+              <div>
+                <strong>Camping in Gehweite</strong>
+                <p>Camping direkt fußläufig zum Gelände für Campervans, Wohnmobile und Zelte.</p>
+              </div>
+            </div>
+
+            <div class="info-fact-item">
+              <span class="fact-icon">♻️</span>
+              <div>
+                <strong>Drinks & Food</strong>
+                <p>Food-Meile mit vegetarischen/veganen Speisen. Mehrwegbecher-System mit 2 € Pfand.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer info-modal-footer">
+          <a href="https://rheingruen-openair.de/" target="_blank" rel="noopener" class="btn-official-website">
+            Zur offiziellen Website (rheingruen-openair.de) ↗
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- iOS PWA Install Guidance Popup (if needed) -->
+    <div id="ios-install-toast" class="ios-install-toast hidden">
+      <div class="ios-toast-content">
+        <span>Tippe auf Teilen <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> und dann <strong>"Zum Home-Bildschirm"</strong> für Offline-Zugriff.</span>
+      </div>
+      <button id="ios-toast-close" class="ios-toast-close" onclick="document.getElementById('ios-install-toast')?.classList.add('hidden'); try{localStorage.setItem('rg_ios_prompt_dismissed','true')}catch(e){}" aria-label="Schließen">✕</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
