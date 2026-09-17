@@ -489,6 +489,15 @@ class RheingruenApp {
 
     this.updatePillsUI(day);
 
+    // Reset horizontal scroll on day switch
+    if (this.stagesColumnsContainer) this.stagesColumnsContainer.scrollLeft = 0;
+    if (this.stageHeadersList) this.stageHeadersList.scrollLeft = 0;
+
+    // Reset inline widths so layout recalculates naturally
+    if (this.stagesScrollContent) this.stagesScrollContent.style.width = "";
+    if (this.nowIndicatorLine) this.nowIndicatorLine.style.width = "";
+    if (this.gridBackgroundLines) this.gridBackgroundLines.style.width = "";
+
     // Rebuild timeline grid for the newly selected day/hours
     this.initTimelineGrid();
 
@@ -686,6 +695,20 @@ class RheingruenApp {
   renderGridView(activeStages) {
     this.stageHeadersList.innerHTML = "";
     this.stagesGridColumns.innerHTML = "";
+
+    const isSingleStage = activeStages.length === 1;
+    if (this.timetableViewport) {
+      this.timetableViewport.classList.toggle("is-single-stage", isSingleStage);
+    }
+
+    // Reset inline widths before rendering new stage columns
+    if (this.stagesScrollContent) this.stagesScrollContent.style.width = "";
+    if (this.nowIndicatorLine) this.nowIndicatorLine.style.width = "";
+    if (this.gridBackgroundLines) this.gridBackgroundLines.style.width = "";
+
+    // Reset horizontal scroll
+    if (this.stagesColumnsContainer) this.stagesColumnsContainer.scrollLeft = 0;
+    if (this.stageHeadersList) this.stageHeadersList.scrollLeft = 0;
 
     const daySchedule = this.data[this.currentDay] || {};
     const dayConf = this.getCurrentDayConfig();
@@ -934,11 +957,31 @@ class RheingruenApp {
   updateGridWidth() {
     requestAnimationFrame(() => {
       if (!this.stagesGridColumns || !this.nowIndicatorLine) return;
-      const fullWidth = Math.max(
-        this.stagesGridColumns.scrollWidth,
-        this.stagesGridColumns.offsetWidth,
-        this.stagesColumnsContainer ? this.stagesColumnsContainer.scrollWidth : 0
-      );
+
+      // Clear inline widths first so elements take their natural layout size
+      if (this.stagesScrollContent) {
+        this.stagesScrollContent.style.width = "";
+      }
+      if (this.nowIndicatorLine) {
+        this.nowIndicatorLine.style.width = "";
+      }
+      if (this.gridBackgroundLines) {
+        this.gridBackgroundLines.style.width = "";
+      }
+
+      const isSingleStage = this.stagesGridColumns.children.length === 1;
+      let fullWidth = 0;
+
+      if (isSingleStage) {
+        const col = this.stagesGridColumns.children[0];
+        fullWidth = col ? col.offsetWidth : 0;
+      } else {
+        fullWidth = Math.max(
+          this.stagesGridColumns.scrollWidth,
+          this.stagesGridColumns.offsetWidth
+        );
+      }
+
       if (fullWidth > 0) {
         const pxStr = `${fullWidth}px`;
         if (this.stagesScrollContent) {

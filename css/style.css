@@ -762,6 +762,22 @@ html, body {
   border-top-color: var(--stage-hidden);
 }
 
+.stage-header-item.header-gotec_main {
+  border-top-color: var(--stage-mainstage);
+}
+
+.stage-header-item.header-gotec_boiler {
+  border-top-color: var(--stage-f2f);
+}
+
+.stage-header-item.header-gotec_cube {
+  border-top-color: var(--stage-hidden);
+}
+
+.stage-header-item.header-elfino {
+  border-top-color: #F59E0B;
+}
+
 .stage-header-name {
   font-size: 0.9rem;
   font-weight: 800;
@@ -772,6 +788,10 @@ html, body {
 .stage-header-item.header-mainstage .stage-header-name { color: var(--stage-mainstage); }
 .stage-header-item.header-f2f .stage-header-name { color: var(--stage-f2f); }
 .stage-header-item.header-hidden .stage-header-name { color: var(--stage-hidden); }
+.stage-header-item.header-gotec_main .stage-header-name { color: var(--stage-mainstage); }
+.stage-header-item.header-gotec_boiler .stage-header-name { color: var(--stage-f2f); }
+.stage-header-item.header-gotec_cube .stage-header-name { color: var(--stage-hidden); }
+.stage-header-item.header-elfino .stage-header-name { color: #F59E0B; }
 
 .stage-header-count {
   font-size: 0.68rem;
@@ -902,6 +922,36 @@ html, body {
   border-right: none;
 }
 
+/* Single Stage Layout (e.g. Friday Pre-Party @ Gotec Main) */
+.is-single-stage .stages-scroll-content {
+  min-width: auto;
+  width: 100%;
+  max-width: 460px;
+}
+
+.is-single-stage .stages-grid-columns {
+  min-width: auto;
+  width: 100%;
+}
+
+.is-single-stage .stage-column {
+  max-width: 460px;
+  width: 100%;
+  flex: 1 1 auto;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.is-single-stage .stage-header-item {
+  max-width: 460px;
+  width: 100%;
+  flex: 1 1 auto;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.is-single-stage .stage-scroll-btn {
+  display: none !important;
+}
+
 /* --------------------------------------------------------------------------
    CURRENT TIME INDICATOR ("NOW" LINE)
    -------------------------------------------------------------------------- */
@@ -1023,6 +1073,26 @@ html, body {
 .act-card[data-stage="hidden"] {
   border-left-color: var(--stage-hidden);
   background: linear-gradient(135deg, rgba(192, 132, 252, 0.08) 0%, var(--bg-surface-card) 60%);
+}
+
+.act-card[data-stage="gotec_main"] {
+  border-left-color: var(--stage-mainstage);
+  background: linear-gradient(135deg, rgba(0, 255, 135, 0.08) 0%, var(--bg-surface-card) 60%);
+}
+
+.act-card[data-stage="gotec_boiler"] {
+  border-left-color: var(--stage-f2f);
+  background: linear-gradient(135deg, rgba(96, 239, 255, 0.08) 0%, var(--bg-surface-card) 60%);
+}
+
+.act-card[data-stage="gotec_cube"] {
+  border-left-color: var(--stage-hidden);
+  background: linear-gradient(135deg, rgba(192, 132, 252, 0.08) 0%, var(--bg-surface-card) 60%);
+}
+
+.act-card[data-stage="elfino"] {
+  border-left-color: #F59E0B;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, var(--bg-surface-card) 60%);
 }
 
 /* Live Playing State */
