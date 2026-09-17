@@ -24,9 +24,10 @@ class RheingruenApp {
     // Time & Simulation State
     const dayConf = this.getCurrentDayConfig();
     const deviceMinutes = this.calculateCurrentMinutes();
-    const isWithinHours = deviceMinutes >= (dayConf.startHour * 60) && deviceMinutes <= (dayConf.endHour * 60);
-    this.simulationActive = !isWithinHours; // Auto-activate demo if opened outside hours
-    this.simulatedMinutes = 930; // 15:30
+    const isWithinHours = this.isWithinDayHours(deviceMinutes, dayConf);
+    const isActualTime = this.isActualFestivalDay(dayConf.id) && isWithinHours;
+    this.simulationActive = !isActualTime; // Auto-activate demo if opened outside live festival hours
+    this.simulatedMinutes = dayConf.isOvernight ? 1410 : 930; // 23:30 for overnight, 15:30 for daytime
     this.nowMinutes = this.simulationActive ? this.simulatedMinutes : deviceMinutes;
 
     // Cache DOM Elements
@@ -42,6 +43,11 @@ class RheingruenApp {
     this.initTimelineGrid();
     this.render();
     this.updateLiveIndicator();
+
+    // Auto-scroll to current live/simulated time on initial load
+    setTimeout(() => {
+      this.jumpToNow(true, true);
+    }, 150);
 
     // Live Clock Interval (every 10 seconds)
     setInterval(() => {
@@ -68,6 +74,44 @@ class RheingruenApp {
     return this.getCurrentDayConfig().stages || this.config.stages;
   }
 
+  getLocalDateIso(dateObj = new Date()) {
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  isWithinDayHours(minutes, dayConf) {
+    const isOvernight = Boolean(dayConf.isOvernight);
+    const startMins = dayConf.startHour * 60;
+    const endMins = dayConf.endHour * 60;
+
+    if (isOvernight && endMins < startMins) {
+      return minutes >= startMins || minutes <= endMins;
+    }
+    return minutes >= startMins && minutes <= endMins;
+  }
+
+  isActualFestivalDay(dayId) {
+    const now = new Date();
+    const localIsoDate = this.getLocalDateIso(now);
+    const hour = now.getHours();
+
+    if (dayId === "friday_pre") {
+      return localIsoDate === "2026-09-18" || (localIsoDate === "2026-09-19" && hour < 6);
+    }
+    if (dayId === "saturday") {
+      return localIsoDate === "2026-09-19" && hour >= 6 && hour < 22;
+    }
+    if (dayId === "saturday_after") {
+      return (localIsoDate === "2026-09-19" && hour >= 22) || (localIsoDate === "2026-09-20" && hour < 9);
+    }
+    if (dayId === "sunday") {
+      return localIsoDate === "2026-09-20" && hour >= 9 && hour < 24;
+    }
+    return false;
+  }
+
   detectInitialDay() {
     const urlParams = new URLSearchParams(window.location.search);
     const dayParam = urlParams.get("day");
@@ -76,15 +120,41 @@ class RheingruenApp {
       return dayParam;
     }
 
-    // Auto-detect based on current real date
+    // Auto-detect based on current real local date and time
     const now = new Date();
-    const isoDate = now.toISOString().split("T")[0];
-    if (isoDate === this.config.dates.friday_pre) {
+    const localIsoDate = this.getLocalDateIso(now);
+    const hour = now.getHours();
+
+    // 1. Friday (2026-09-18): Pre-Party @ Gotec (starts 22:00)
+    if (localIsoDate === this.config.dates.friday_pre) {
       return "friday_pre";
     }
-    if (isoDate === this.config.dates.sunday) {
+
+    // 2. Saturday (2026-09-19):
+    if (localIsoDate === this.config.dates.saturday) {
+      // 00:00 - 06:00: Friday Pre-Party is still in full swing at Gotec!
+      if (hour < 6) {
+        return "friday_pre";
+      }
+      // 06:00 - 22:00: Main Saturday Open-Air Festival
+      if (hour < 22) {
+        return "saturday";
+      }
+      // 22:00 onwards: Saturday Official Aftershow @ Gotec & Elfino
+      return "saturday_after";
+    }
+
+    // 3. Sunday (2026-09-20):
+    if (localIsoDate === this.config.dates.sunday) {
+      // 00:00 - 09:00: Saturday Aftershow is still ongoing at Gotec
+      if (hour < 9) {
+        return "saturday_after";
+      }
+      // 09:00 onwards: Sunday Festival
       return "sunday";
     }
+
+    // Default outside festival weekend: Saturday (main open-air festival day)
     return "saturday";
   }
 
@@ -486,6 +556,12 @@ class RheingruenApp {
 
     const dayConf = this.getCurrentDayConfig();
     this.currentCategory = dayConf.category || "festival";
+
+    // Adjust simulated minutes for selected day if demo simulation is active
+    if (this.simulationActive) {
+      this.simulatedMinutes = dayConf.isOvernight ? 1410 : 930;
+      this.nowMinutes = this.simulatedMinutes;
+    }
 
     this.updatePillsUI(day);
 
@@ -932,13 +1008,8 @@ class RheingruenApp {
       return currentMins >= startMins && currentMins < endMins;
     }
 
-    // In preview/testing outside festival dates, allow viewing current time of day on the timetable
-    const now = new Date();
-    const isoDate = now.toISOString().split("T")[0];
-    const festivalDayIso = this.config.dates[actDay];
-    
     // If on actual event day, or if testing before festival
-    if (isoDate === festivalDayIso || !this.isActualFestivalWeekend()) {
+    if (this.isActualFestivalDay(actDay) || !this.isActualFestivalWeekend()) {
       return currentMins >= startMins && currentMins < endMins;
     }
 
@@ -947,8 +1018,14 @@ class RheingruenApp {
 
   isActualFestivalWeekend() {
     const now = new Date();
-    const isoDate = now.toISOString().split("T")[0];
-    return Object.values(this.config.dates).includes(isoDate);
+    const localIsoDate = this.getLocalDateIso(now);
+    const hour = now.getHours();
+    return (
+      localIsoDate === "2026-09-18" ||
+      localIsoDate === "2026-09-19" ||
+      localIsoDate === "2026-09-20" ||
+      (localIsoDate === "2026-09-21" && hour < 9)
+    );
   }
 
   // --------------------------------------------------------------------------
@@ -1032,9 +1109,19 @@ class RheingruenApp {
   // --------------------------------------------------------------------------
   // "Jump to Now" Smooth Scroll
   // --------------------------------------------------------------------------
-  jumpToNow() {
+  jumpToNow(silent = false, instant = false) {
+    // If explicitly invoked by user click and current day is not the active festival day, switch to it!
+    if (!silent) {
+      const activeDay = this.detectInitialDay();
+      if (this.currentDay !== activeDay) {
+        this.setDay(activeDay);
+        // After switching day, jumpToNow is invoked
+        return;
+      }
+    }
+
     // Blur button and trigger brief click feedback
-    if (this.btnJumpNow) {
+    if (!silent && this.btnJumpNow) {
       this.btnJumpNow.blur();
       this.btnJumpNow.classList.add("is-pressed");
       setTimeout(() => {
@@ -1063,16 +1150,18 @@ class RheingruenApp {
     }
 
     const topPx = this.getTimelineY(targetMins);
-    const viewportHeight = this.timetableBody.clientHeight;
+    const viewportHeight = this.timetableBody ? this.timetableBody.clientHeight : 600;
     const scrollToY = Math.max(0, topPx - viewportHeight / 2.5);
 
-    this.timetableBody.scrollTo({
-      top: scrollToY,
-      behavior: "smooth"
-    });
+    if (this.timetableBody) {
+      this.timetableBody.scrollTo({
+        top: scrollToY,
+        behavior: instant ? "auto" : "smooth"
+      });
+    }
 
     // Visual pulse highlight that cleanly fades out automatically
-    if (this.nowIndicatorLine) {
+    if (!silent && this.nowIndicatorLine) {
       this.nowIndicatorLine.classList.remove("pulse-highlight");
       void this.nowIndicatorLine.offsetWidth; // Force reflow to restart animation
       this.nowIndicatorLine.classList.add("pulse-highlight");
