@@ -35,7 +35,7 @@
 
   /* Sizing & Geometry */
   --header-height: auto;
-  --time-axis-width: 44px;
+  --time-axis-width: 62px;
   --stage-col-min-width: 250px;
   --px-per-minute: 2px; /* 60 min = 120px */
   --timeline-start-minutes: 660; /* 11:00 AM */
@@ -726,9 +726,9 @@ html, body {
 }
 
 .corner-label {
-  font-size: 0.58rem;
+  font-size: 0.65rem;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   color: var(--text-muted);
 }
 
@@ -838,15 +838,14 @@ html, body {
   position: absolute;
   left: 0;
   width: 100%;
-  padding-right: 5px;
+  padding-right: 8px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   color: var(--text-muted);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-family: monospace;
   font-weight: 600;
-  letter-spacing: -0.2px;
   transform: translateY(-50%);
 }
 
@@ -859,18 +858,18 @@ html, body {
   content: "";
   position: absolute;
   right: 0;
-  width: 4px;
+  width: 6px;
   height: 1px;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .time-axis-tick.half::after {
   content: "";
   position: absolute;
   right: 0;
-  width: 3px;
+  width: 4px;
   height: 1px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Stages Columns Horizontal Scroll Track */
@@ -1753,27 +1752,8 @@ html, body {
 @media (min-width: 768px) {
   :root {
     --stage-col-min-width: 300px;
-    --time-axis-width: 60px;
+    --time-axis-width: 75px;
     --px-per-minute: 2.2px;
-  }
-
-  .corner-label {
-    font-size: 0.65rem;
-    letter-spacing: 1px;
-  }
-
-  .time-axis-tick {
-    font-size: 0.72rem;
-    padding-right: 8px;
-    letter-spacing: normal;
-  }
-
-  .time-axis-tick.hour::after {
-    width: 6px;
-  }
-
-  .time-axis-tick.half::after {
-    width: 4px;
   }
 
   .app-header {
