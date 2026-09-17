@@ -490,12 +490,23 @@ html, body {
   transition: all 0.2s ease;
 }
 
-.pill-badge.pill-badge-club {
+.pill-badge.pill-badge-festival,
+.event-pill[data-day="saturday"] .pill-badge,
+.event-pill[data-day="sunday"] .pill-badge {
+  color: var(--neon-green, #00FF87);
+  background: rgba(0, 255, 135, 0.14);
+}
+
+.pill-badge.pill-badge-club,
+.event-pill[data-day="friday_pre"] .pill-badge,
+.event-pill[data-day="saturday_after"] .pill-badge {
   color: var(--neon-cyan, #60EFFF);
   background: rgba(96, 239, 255, 0.14);
 }
 
-.event-pill.active .pill-badge {
+.event-pill.active .pill-badge,
+.event-pill[data-day="saturday"].active .pill-badge,
+.event-pill[data-day="sunday"].active .pill-badge {
   background: var(--neon-green, #00FF87) !important;
   color: #060a08 !important;
   font-weight: 800;
