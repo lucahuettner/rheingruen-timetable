@@ -870,6 +870,8 @@ class RheingruenApp {
           .register("./sw.js")
           .then((reg) => {
             console.log("[PWA] ServiceWorker registered with scope:", reg.scope);
+            // Proactively check for new version on GitHub
+            reg.update().catch(() => {});
           })
           .catch((err) => {
             console.warn("[PWA] ServiceWorker registration failed:", err);
