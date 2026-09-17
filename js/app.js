@@ -247,7 +247,10 @@ class RheingruenApp {
     });
 
     // Jump to Now
-    this.btnJumpNow.addEventListener("click", () => this.jumpToNow());
+    this.btnJumpNow.addEventListener("click", (e) => {
+      e.currentTarget.blur();
+      this.jumpToNow();
+    });
 
     // Search Input
     this.artistSearch.addEventListener("input", (e) => {
@@ -699,6 +702,15 @@ class RheingruenApp {
   // "Jump to Now" Smooth Scroll
   // --------------------------------------------------------------------------
   jumpToNow() {
+    // Blur button and trigger brief click feedback
+    if (this.btnJumpNow) {
+      this.btnJumpNow.blur();
+      this.btnJumpNow.classList.add("is-pressed");
+      setTimeout(() => {
+        if (this.btnJumpNow) this.btnJumpNow.classList.remove("is-pressed");
+      }, 300);
+    }
+
     const currentMins = this.nowMinutes;
     const startMins = this.config.startHour * 60;
     const endMins = this.config.endHour * 60;
@@ -723,11 +735,18 @@ class RheingruenApp {
       behavior: "smooth"
     });
 
-    // Visual pulse highlight
-    this.nowIndicatorLine.style.filter = "drop-shadow(0 0 16px #00FF87)";
-    setTimeout(() => {
-      this.nowIndicatorLine.style.filter = "";
-    }, 1500);
+    // Visual pulse highlight that cleanly fades out automatically
+    if (this.nowIndicatorLine) {
+      this.nowIndicatorLine.classList.remove("pulse-highlight");
+      void this.nowIndicatorLine.offsetWidth; // Force reflow to restart animation
+      this.nowIndicatorLine.classList.add("pulse-highlight");
+      setTimeout(() => {
+        if (this.nowIndicatorLine) {
+          this.nowIndicatorLine.classList.remove("pulse-highlight");
+          this.nowIndicatorLine.style.filter = "";
+        }
+      }, 1200);
+    }
   }
 
   // --------------------------------------------------------------------------

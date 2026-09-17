@@ -171,14 +171,26 @@ html, body {
   align-items: center;
   gap: 5px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
   font-size: 0.8rem;
   font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.action-btn:hover {
-  background: var(--bg-surface-elevated);
-  border-color: rgba(255, 255, 255, 0.2);
+.action-btn:focus {
+  outline: none;
+}
+
+.action-btn:focus-visible {
+  outline: 2px solid var(--neon-green);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .action-btn:hover {
+    background: var(--bg-surface-elevated);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 }
 
 .action-btn:active {
@@ -196,10 +208,20 @@ html, body {
   color: var(--neon-green);
 }
 
-.btn-now:hover {
-  background: rgba(0, 255, 135, 0.25);
+@media (hover: hover) {
+  .btn-now:hover {
+    background: rgba(0, 255, 135, 0.25);
+    border-color: var(--neon-green);
+    box-shadow: 0 0 10px var(--neon-green-glow);
+  }
+}
+
+.btn-now:active,
+.btn-now.is-pressed {
+  background: rgba(0, 255, 135, 0.35);
   border-color: var(--neon-green);
-  box-shadow: 0 0 10px var(--neon-green-glow);
+  box-shadow: 0 0 12px var(--neon-green-glow);
+  transform: scale(0.95);
 }
 
 .badge-mini-time {
@@ -824,6 +846,22 @@ html, body {
   height: 2px;
   background: var(--neon-green);
   box-shadow: 0 0 8px var(--neon-green-glow), 0 0 2px var(--neon-green);
+}
+
+.now-indicator-line.pulse-highlight {
+  animation: line-pulse 1.2s ease-out forwards;
+}
+
+@keyframes line-pulse {
+  0% {
+    filter: drop-shadow(0 0 16px #00FF87);
+  }
+  40% {
+    filter: drop-shadow(0 0 20px #00FF87);
+  }
+  100% {
+    filter: drop-shadow(0 0 0px transparent);
+  }
 }
 
 /* --------------------------------------------------------------------------
