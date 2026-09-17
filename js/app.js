@@ -133,6 +133,8 @@ class RheingruenApp {
     // Grid Track Elements
     this.stageHeadersTrack = document.getElementById("stage-headers-track");
     this.stageHeadersList = document.getElementById("stage-headers-list");
+    this.btnScrollStagesLeft = document.getElementById("btn-scroll-stages-left");
+    this.btnScrollStagesRight = document.getElementById("btn-scroll-stages-right");
     this.timetableBody = document.getElementById("timetable-body");
     this.timeAxisColumn = document.getElementById("time-axis-column");
     this.stagesColumnsContainer = document.getElementById("stages-columns-container");
@@ -351,6 +353,21 @@ class RheingruenApp {
       this.btnDismissDisclaimer.addEventListener("click", () => this.dismissDisclaimer());
     }
 
+    // Desktop Stage Scroll Buttons
+    if (this.btnScrollStagesLeft) {
+      this.btnScrollStagesLeft.addEventListener("click", () => {
+        this.stagesColumnsContainer.scrollBy({ left: -320, behavior: "smooth" });
+      });
+    }
+    if (this.btnScrollStagesRight) {
+      this.btnScrollStagesRight.addEventListener("click", () => {
+        this.stagesColumnsContainer.scrollBy({ left: 320, behavior: "smooth" });
+      });
+    }
+
+    // Initialize Desktop Drag-To-Scroll & Horizontal Wheel Support
+    this.initDesktopScrollHelpers();
+
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         this.closeModal();
@@ -358,8 +375,95 @@ class RheingruenApp {
       }
     });
 
-    window.addEventListener("resize", () => this.updateGridWidth(), { passive: true });
-    window.addEventListener("orientationchange", () => this.updateGridWidth(), { passive: true });
+    window.addEventListener("resize", () => {
+      this.updateGridWidth();
+      this.updateScrollArrows();
+    }, { passive: true });
+    window.addEventListener("orientationchange", () => {
+      this.updateGridWidth();
+      this.updateScrollArrows();
+    }, { passive: true });
+  }
+
+  initDesktopScrollHelpers() {
+    const container = this.stagesColumnsContainer;
+    const headers = this.stageHeadersList;
+    if (!container) return;
+
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let hasMoved = false;
+
+    const onMouseDown = (e) => {
+      // Don't drag if clicking buttons, favorite icons, or interactive controls
+      if (e.target.closest("button, .card-fav-btn, a, input")) return;
+      isDown = true;
+      hasMoved = false;
+      startX = e.pageX;
+      scrollLeft = container.scrollLeft;
+      document.body.classList.add("is-dragging-timetable");
+    };
+
+    const onMouseMove = (e) => {
+      if (!isDown) return;
+      const x = e.pageX;
+      const walk = (x - startX) * 1.3;
+      if (Math.abs(walk) > 4) {
+        hasMoved = true;
+      }
+      container.scrollLeft = scrollLeft - walk;
+    };
+
+    const onMouseUp = () => {
+      if (!isDown) return;
+      isDown = false;
+      document.body.classList.remove("is-dragging-timetable");
+    };
+
+    container.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+
+    if (headers) {
+      headers.addEventListener("mousedown", onMouseDown);
+
+      // Mouse Wheel on sticky stage headers -> scrolls horizontally
+      headers.addEventListener("wheel", (e) => {
+        if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) {
+          container.scrollLeft += e.deltaY;
+          e.preventDefault();
+        }
+      }, { passive: false });
+    }
+
+    // Prevent act modal opening if mouse was dragging
+    container.addEventListener("click", (e) => {
+      if (hasMoved) {
+        e.stopPropagation();
+        e.preventDefault();
+        hasMoved = false;
+      }
+    }, true);
+
+    // Update Left/Right Arrow button visibility on scroll
+    container.addEventListener("scroll", () => this.updateScrollArrows(), { passive: true });
+  }
+
+  updateScrollArrows() {
+    if (!this.btnScrollStagesLeft || !this.btnScrollStagesRight || !this.stagesColumnsContainer) return;
+    const container = this.stagesColumnsContainer;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const canScroll = maxScroll > 10;
+
+    if (!canScroll) {
+      this.btnScrollStagesLeft.classList.add("hidden");
+      this.btnScrollStagesRight.classList.add("hidden");
+      return;
+    }
+
+    this.btnScrollStagesLeft.classList.toggle("hidden", container.scrollLeft <= 10);
+    this.btnScrollStagesRight.classList.toggle("hidden", container.scrollLeft >= maxScroll - 10);
   }
 
   // --------------------------------------------------------------------------
@@ -861,6 +965,7 @@ class RheingruenApp {
           this.gridBackgroundLines.style.width = pxStr;
         }
       }
+      this.updateScrollArrows();
     });
   }
 
