@@ -826,8 +826,6 @@ class RheingruenApp {
 
           <div class="card-body">
             <div class="card-artist">${act.artist}</div>
-            ${act.isSpecial ? `<span class="card-special-badge">Special Closing</span>` : ""}
-            ${act.isLive ? `<span class="card-special-badge" style="color:#60EFFF;border-color:#60EFFF;">LIVE SET</span>` : ""}
           </div>
 
           <div class="card-footer">
@@ -934,7 +932,6 @@ class RheingruenApp {
         <div class="list-info-block">
           <div class="list-artist-title">${act.artist}</div>
           <span class="list-stage-label stage-${act.stage}" style="color: ${act.stageConfig.color};">${dayPrefix}${act.stageConfig.name}</span>
-          ${act.isSpecial ? ` <span class="card-special-badge">Special Closing</span>` : ""}
         </div>
 
         <button class="card-fav-btn ${isFav ? "favorited" : ""}" data-act-id="${act.id}" title="Favorit">
