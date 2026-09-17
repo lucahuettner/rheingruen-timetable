@@ -12,6 +12,7 @@ class RheingruenApp {
 
     // Application State
     this.currentDay = this.detectInitialDay();
+    this.currentCategory = this.getCurrentDayConfig().category || "festival";
     this.stageFilter = "all"; // "all" | "mainstage" | "f2f" | "hidden"
     this.viewMode = "grid";   // "grid" | "list"
     this.searchQuery = "";
@@ -21,9 +22,10 @@ class RheingruenApp {
     this.favorites = this.loadFavorites();
 
     // Time & Simulation State
+    const dayConf = this.getCurrentDayConfig();
     const deviceMinutes = this.calculateCurrentMinutes();
-    const isWithinFestivalHours = deviceMinutes >= (this.config.startHour * 60) && deviceMinutes <= (this.config.endHour * 60);
-    this.simulationActive = !isWithinFestivalHours; // Auto-activate demo if opened at night/morning
+    const isWithinHours = deviceMinutes >= (dayConf.startHour * 60) && deviceMinutes <= (dayConf.endHour * 60);
+    this.simulationActive = !isWithinHours; // Auto-activate demo if opened outside hours
     this.simulatedMinutes = 930; // 15:30
     this.nowMinutes = this.simulationActive ? this.simulatedMinutes : deviceMinutes;
 
@@ -55,16 +57,28 @@ class RheingruenApp {
   // --------------------------------------------------------------------------
   // Initialization & Helpers
   // --------------------------------------------------------------------------
+  getCurrentDayConfig() {
+    return this.config.days.find((d) => d.id === this.currentDay) || this.config.days[0];
+  }
+
+  getCurrentStages() {
+    return this.getCurrentDayConfig().stages || this.config.stages;
+  }
+
   detectInitialDay() {
     const urlParams = new URLSearchParams(window.location.search);
     const dayParam = urlParams.get("day");
-    if (dayParam === "saturday" || dayParam === "sunday") {
+    const validDays = ["saturday", "sunday", "friday_pre", "saturday_after"];
+    if (validDays.includes(dayParam)) {
       return dayParam;
     }
 
     // Auto-detect based on current real date
     const now = new Date();
     const isoDate = now.toISOString().split("T")[0];
+    if (isoDate === this.config.dates.friday_pre) {
+      return "friday_pre";
+    }
     if (isoDate === this.config.dates.sunday) {
       return "sunday";
     }
@@ -88,9 +102,17 @@ class RheingruenApp {
     this.disclaimerModal = document.getElementById("disclaimer-modal");
     this.btnDismissDisclaimer = document.getElementById("btn-dismiss-disclaimer");
 
-    // Day & View Navigation
+    // Category Navigation (Festival vs Club)
+    this.tabCategoryFestival = document.getElementById("tab-category-festival");
+    this.tabCategoryClub = document.getElementById("tab-category-club");
+    this.subnavFestival = document.getElementById("subnav-festival");
+    this.subnavClub = document.getElementById("subnav-club");
+
+    // Day & Event Navigation
     this.tabSaturday = document.getElementById("tab-saturday");
     this.tabSunday = document.getElementById("tab-sunday");
+    this.tabFridayPre = document.getElementById("tab-friday-pre");
+    this.tabSaturdayAfter = document.getElementById("tab-saturday-after");
     this.btnViewGrid = document.getElementById("view-grid-btn");
     this.btnViewList = document.getElementById("view-list-btn");
 
@@ -147,19 +169,36 @@ class RheingruenApp {
   // --------------------------------------------------------------------------
   // Time Computation Utilities
   // --------------------------------------------------------------------------
-  timeToMinutes(timeStr) {
+  timeToMinutes(timeStr, isOvernight = false) {
     const [h, m] = timeStr.split(":").map(Number);
-    return h * 60 + m;
+    let effectiveH = h;
+    if (isOvernight && h < 12) {
+      effectiveH += 24;
+    }
+    return effectiveH * 60 + m;
   }
 
   minutesToTime(totalMinutes) {
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = Math.floor(totalMinutes % 60);
+    const normMinutes = ((totalMinutes % (24 * 60)) + (24 * 60)) % (24 * 60);
+    const hours = Math.floor(normMinutes / 60);
+    const minutes = Math.floor(normMinutes % 60);
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
   }
 
-  getDurationMinutes(start, end) {
-    return this.timeToMinutes(end) - this.timeToMinutes(start);
+  getDurationMinutes(start, end, isOvernight = false) {
+    return this.timeToMinutes(end, isOvernight) - this.timeToMinutes(start, isOvernight);
+  }
+
+  getEffectiveCurrentMinutes(isOvernight = false) {
+    let mins = this.nowMinutes;
+    if (isOvernight) {
+      const hours = Math.floor(mins / 60);
+      const remainder = mins % 60;
+      if (hours < 12) {
+        mins = (hours + 24) * 60 + remainder;
+      }
+    }
+    return mins;
   }
 
   calculateCurrentMinutes() {
@@ -171,7 +210,9 @@ class RheingruenApp {
   }
 
   getTimelineY(minutes) {
-    const offset = minutes - this.config.startHour * 60;
+    const dayConf = this.getCurrentDayConfig();
+    const startMins = dayConf.startHour * 60;
+    const offset = minutes - startMins;
     return offset * this.config.pxPerMinute;
   }
 
@@ -179,8 +220,12 @@ class RheingruenApp {
   // Grid Initialization (Static Elements)
   // --------------------------------------------------------------------------
   initTimelineGrid() {
-    const startMins = this.config.startHour * 60; // 660 (11:00)
-    const endMins = this.config.endHour * 60;     // 1380 (23:00)
+    const dayConf = this.getCurrentDayConfig();
+    const isOvernight = Boolean(dayConf.isOvernight);
+    const startMins = dayConf.startHour * 60;
+    const endMins = (isOvernight && dayConf.endHour < dayConf.startHour)
+      ? (dayConf.endHour + 24) * 60
+      : dayConf.endHour * 60;
     const totalMinutes = endMins - startMins;
     const totalHeight = totalMinutes * this.config.pxPerMinute;
 
@@ -238,9 +283,19 @@ class RheingruenApp {
       isSyncingBody = false;
     }, { passive: true });
 
-    // Day Tabs
-    this.tabSaturday.addEventListener("click", () => this.setDay("saturday"));
-    this.tabSunday.addEventListener("click", () => this.setDay("sunday"));
+    // Category Tabs (Festival vs Club)
+    if (this.tabCategoryFestival) {
+      this.tabCategoryFestival.addEventListener("click", () => this.setCategory("festival"));
+    }
+    if (this.tabCategoryClub) {
+      this.tabCategoryClub.addEventListener("click", () => this.setCategory("club"));
+    }
+
+    // Day & Event Tabs
+    if (this.tabSaturday) this.tabSaturday.addEventListener("click", () => this.setDay("saturday"));
+    if (this.tabSunday) this.tabSunday.addEventListener("click", () => this.setDay("sunday"));
+    if (this.tabFridayPre) this.tabFridayPre.addEventListener("click", () => this.setDay("friday_pre"));
+    if (this.tabSaturdayAfter) this.tabSaturdayAfter.addEventListener("click", () => this.setDay("saturday_after"));
 
     // View Switcher (Grid vs List)
     this.btnViewGrid.addEventListener("click", () => this.setViewMode("grid"));
@@ -310,12 +365,45 @@ class RheingruenApp {
   // --------------------------------------------------------------------------
   // State Setters
   // --------------------------------------------------------------------------
+  setCategory(category) {
+    if (this.currentCategory === category) return;
+    this.currentCategory = category;
+
+    if (this.tabCategoryFestival) this.tabCategoryFestival.classList.toggle("active", category === "festival");
+    if (this.tabCategoryClub) this.tabCategoryClub.classList.toggle("active", category === "club");
+
+    if (this.subnavFestival) this.subnavFestival.classList.toggle("hidden", category !== "festival");
+    if (this.subnavClub) this.subnavClub.classList.toggle("hidden", category !== "club");
+
+    if (category === "festival") {
+      this.setDay("saturday");
+    } else {
+      this.setDay("friday_pre");
+    }
+  }
+
   setDay(day) {
     if (this.currentDay === day) return;
     this.currentDay = day;
-    this.tabSaturday.classList.toggle("active", day === "saturday");
-    this.tabSunday.classList.toggle("active", day === "sunday");
-    
+
+    const dayConf = this.getCurrentDayConfig();
+    const category = dayConf.category || "festival";
+    if (this.currentCategory !== category) {
+      this.currentCategory = category;
+      if (this.tabCategoryFestival) this.tabCategoryFestival.classList.toggle("active", category === "festival");
+      if (this.tabCategoryClub) this.tabCategoryClub.classList.toggle("active", category === "club");
+      if (this.subnavFestival) this.subnavFestival.classList.toggle("hidden", category !== "festival");
+      if (this.subnavClub) this.subnavClub.classList.toggle("hidden", category !== "club");
+    }
+
+    if (this.tabSaturday) this.tabSaturday.classList.toggle("active", day === "saturday");
+    if (this.tabSunday) this.tabSunday.classList.toggle("active", day === "sunday");
+    if (this.tabFridayPre) this.tabFridayPre.classList.toggle("active", day === "friday_pre");
+    if (this.tabSaturdayAfter) this.tabSaturdayAfter.classList.toggle("active", day === "saturday_after");
+
+    // Rebuild timeline grid for the newly selected day/hours
+    this.initTimelineGrid();
+
     // Update URL parameter without reload
     const url = new URL(window.location);
     url.searchParams.set("day", day);
@@ -488,7 +576,7 @@ class RheingruenApp {
   }
 
   getActiveStages() {
-    return this.config.stages;
+    return this.getCurrentStages();
   }
 
   updateFilterHints() {
@@ -511,7 +599,9 @@ class RheingruenApp {
     this.stageHeadersList.innerHTML = "";
     this.stagesGridColumns.innerHTML = "";
 
-    const daySchedule = this.data[this.currentDay];
+    const daySchedule = this.data[this.currentDay] || {};
+    const dayConf = this.getCurrentDayConfig();
+    const isOvernight = Boolean(dayConf.isOvernight);
     let totalActsRendered = 0;
 
     activeStages.forEach((stage) => {
@@ -533,8 +623,8 @@ class RheingruenApp {
       stageCol.className = `stage-column col-${stage.id}`;
 
       filteredActs.forEach((act) => {
-        const startMin = this.timeToMinutes(act.start);
-        const endMin = this.timeToMinutes(act.end);
+        const startMin = this.timeToMinutes(act.start, isOvernight);
+        const endMin = this.timeToMinutes(act.end, isOvernight);
         const durationMin = endMin - startMin;
 
         const topPx = this.getTimelineY(startMin);
@@ -604,29 +694,61 @@ class RheingruenApp {
   renderListView(activeStages) {
     this.listCardsWrapper.innerHTML = "";
 
-    const daySchedule = this.data[this.currentDay];
     const allActs = [];
+    const dayConf = this.getCurrentDayConfig();
+    const isOvernight = Boolean(dayConf.isOvernight);
 
-    activeStages.forEach((stage) => {
-      const acts = daySchedule[stage.id] || [];
-      acts.forEach((act) => {
-        if (this.filterAct(act)) {
-          allActs.push({ ...act, stageConfig: stage });
+    // If searching, search across ALL events and days
+    if (this.searchQuery) {
+      for (const [dayId, stages] of Object.entries(this.data)) {
+        const dConf = this.config.days.find((d) => d.id === dayId) || {};
+        const dStages = dConf.stages || this.config.stages;
+        for (const [stageId, acts] of Object.entries(stages)) {
+          const stageConfig = dStages.find((s) => s.id === stageId) || { name: stageId, color: "#00FF87" };
+          acts.forEach((act) => {
+            if (this.filterAct(act)) {
+              allActs.push({
+                ...act,
+                dayConfig: dConf,
+                stageConfig
+              });
+            }
+          });
         }
+      }
+    } else {
+      const daySchedule = this.data[this.currentDay] || {};
+      activeStages.forEach((stage) => {
+        const acts = daySchedule[stage.id] || [];
+        acts.forEach((act) => {
+          if (this.filterAct(act)) {
+            allActs.push({
+              ...act,
+              dayConfig: dayConf,
+              stageConfig: stage
+            });
+          }
+        });
       });
-    });
+    }
 
     // Sort chronologically by start time
     allActs.sort((a, b) => {
-      const diff = this.timeToMinutes(a.start) - this.timeToMinutes(b.start);
+      const aOvernight = Boolean(a.dayConfig?.isOvernight);
+      const bOvernight = Boolean(b.dayConfig?.isOvernight);
+      const aTime = this.timeToMinutes(a.start, aOvernight);
+      const bTime = this.timeToMinutes(b.start, bOvernight);
+      const diff = aTime - bTime;
       if (diff !== 0) return diff;
       return a.stageConfig.name.localeCompare(b.stageConfig.name);
     });
 
     allActs.forEach((act) => {
+      const actOvernight = Boolean(act.dayConfig?.isOvernight);
       const isLive = this.isActLive(act);
       const isFav = this.favorites.has(act.id);
-      const durationMin = this.getDurationMinutes(act.start, act.end);
+      const durationMin = this.getDurationMinutes(act.start, act.end, actOvernight);
+      const dayPrefix = this.searchQuery && act.dayConfig ? `${act.dayConfig.label} · ` : "";
 
       const card = document.createElement("div");
       card.className = `list-item-card ${isLive ? "is-live" : ""}`;
@@ -640,7 +762,7 @@ class RheingruenApp {
 
         <div class="list-info-block">
           <div class="list-artist-title">${act.artist}</div>
-          <span class="list-stage-label ${act.stage}">${act.stageConfig.name}</span>
+          <span class="list-stage-label ${act.stage}">${dayPrefix}${act.stageConfig.name}</span>
           ${act.isSpecial ? ` <span class="card-special-badge">Special Closing</span>` : ""}
         </div>
 
@@ -686,9 +808,13 @@ class RheingruenApp {
   }
 
   isActLive(act) {
-    const currentMins = this.nowMinutes;
-    const startMins = this.timeToMinutes(act.start);
-    const endMins = this.timeToMinutes(act.end);
+    const actDay = act.day || this.currentDay;
+    const dayConf = this.config.days.find((d) => d.id === actDay) || this.getCurrentDayConfig();
+    const isOvernight = Boolean(dayConf.isOvernight);
+
+    const currentMins = this.getEffectiveCurrentMinutes(isOvernight);
+    const startMins = this.timeToMinutes(act.start, isOvernight);
+    const endMins = this.timeToMinutes(act.end, isOvernight);
 
     // If simulation active: live on current displayed day
     if (this.simulationActive) {
@@ -698,9 +824,9 @@ class RheingruenApp {
     // In preview/testing outside festival dates, allow viewing current time of day on the timetable
     const now = new Date();
     const isoDate = now.toISOString().split("T")[0];
-    const festivalDayIso = this.config.dates[this.currentDay];
+    const festivalDayIso = this.config.dates[actDay];
     
-    // If on actual festival day, or if testing before festival
+    // If on actual event day, or if testing before festival
     if (isoDate === festivalDayIso || !this.isActualFestivalWeekend()) {
       return currentMins >= startMins && currentMins < endMins;
     }
@@ -711,7 +837,7 @@ class RheingruenApp {
   isActualFestivalWeekend() {
     const now = new Date();
     const isoDate = now.toISOString().split("T")[0];
-    return isoDate === this.config.dates.saturday || isoDate === this.config.dates.sunday;
+    return Object.values(this.config.dates).includes(isoDate);
   }
 
   // --------------------------------------------------------------------------
@@ -749,17 +875,20 @@ class RheingruenApp {
     this.headerNowBadge.textContent = timeFormatted;
     this.nowLineText.textContent = timeFormatted;
 
-    const startMins = this.config.startHour * 60;
-    const endMins = this.config.endHour * 60;
+    const dayConf = this.getCurrentDayConfig();
+    const isOvernight = Boolean(dayConf.isOvernight);
+    const startMins = dayConf.startHour * 60;
+    const endMins = (isOvernight && dayConf.endHour < dayConf.startHour)
+      ? (dayConf.endHour + 24) * 60
+      : dayConf.endHour * 60;
 
-    // Check if line falls within 11:00 - 23:00
-    const isInFestivalHours = currentMins >= startMins && currentMins <= endMins;
+    const effectiveCurrentMins = this.getEffectiveCurrentMinutes(isOvernight);
 
-    // Show line when within festival hours
-    const showLine = isInFestivalHours;
+    // Check if line falls within day hours
+    const isInHours = effectiveCurrentMins >= startMins && effectiveCurrentMins <= endMins;
 
-    if (showLine) {
-      const topPx = this.getTimelineY(currentMins);
+    if (isInHours) {
+      const topPx = this.getTimelineY(effectiveCurrentMins);
       this.nowIndicatorLine.style.display = "flex";
       this.nowIndicatorLine.style.top = `${topPx}px`;
       this.updateGridWidth();
@@ -781,17 +910,22 @@ class RheingruenApp {
       }, 300);
     }
 
-    const currentMins = this.nowMinutes;
-    const startMins = this.config.startHour * 60;
-    const endMins = this.config.endHour * 60;
+    const dayConf = this.getCurrentDayConfig();
+    const isOvernight = Boolean(dayConf.isOvernight);
+    const startMins = dayConf.startHour * 60;
+    const endMins = (isOvernight && dayConf.endHour < dayConf.startHour)
+      ? (dayConf.endHour + 24) * 60
+      : dayConf.endHour * 60;
+
+    const effectiveCurrentMins = this.getEffectiveCurrentMinutes(isOvernight);
 
     // Switch to grid view if not in grid
     if (this.viewMode !== "grid") {
       this.setViewMode("grid");
     }
 
-    // If outside hours or not on active day, scroll to festival start
-    let targetMins = currentMins;
+    // If outside hours, scroll to start
+    let targetMins = effectiveCurrentMins;
     if (targetMins < startMins || targetMins > endMins) {
       targetMins = startMins;
     }
@@ -824,7 +958,13 @@ class RheingruenApp {
   // --------------------------------------------------------------------------
   openModal(act) {
     this.currentModalAct = act;
-    const stageConfig = this.config.stages.find((s) => s.id === act.stage) || {};
+
+    const actDay = act.day || this.currentDay;
+    const dayConf = this.config.days.find((d) => d.id === actDay) || this.getCurrentDayConfig();
+    const isOvernight = Boolean(dayConf.isOvernight);
+
+    const stages = dayConf.stages || this.config.stages;
+    const stageConfig = stages.find((s) => s.id === act.stage) || this.config.stages.find((s) => s.id === act.stage) || {};
 
     // Header Details
     this.modalStageBadge.textContent = act.stageName;
@@ -833,23 +973,23 @@ class RheingruenApp {
 
     this.modalArtist.textContent = act.artist;
     this.modalTime.textContent = `${act.start} – ${act.end}`;
-    const durationMin = this.getDurationMinutes(act.start, act.end);
+    const durationMin = this.getDurationMinutes(act.start, act.end, isOvernight);
     this.modalDuration.textContent = `(${durationMin} Min.)`;
 
     const isLive = this.isActLive(act);
     this.modalLivePill.classList.toggle("hidden", !isLive);
 
     // Status / Countdown
-    const currentMins = this.nowMinutes;
-    const startMins = this.timeToMinutes(act.start);
-    const endMins = this.timeToMinutes(act.end);
+    const effectiveCurrentMins = this.getEffectiveCurrentMinutes(isOvernight);
+    const startMins = this.timeToMinutes(act.start, isOvernight);
+    const endMins = this.timeToMinutes(act.end, isOvernight);
 
     if (isLive) {
-      const remaining = endMins - currentMins;
+      const remaining = endMins - effectiveCurrentMins;
       this.modalStatusIcon.textContent = "🔊";
       this.modalStatusText.textContent = `Spielt JETZT! Noch ${remaining} Minuten (bis ${act.end} Uhr)`;
-    } else if (currentMins < startMins) {
-      const diff = startMins - currentMins;
+    } else if (effectiveCurrentMins < startMins) {
+      const diff = startMins - effectiveCurrentMins;
       const hours = Math.floor(diff / 60);
       const mins = diff % 60;
       let diffStr = "";
@@ -876,17 +1016,21 @@ class RheingruenApp {
   }
 
   checkClashes(currentAct) {
-    const curStart = this.timeToMinutes(currentAct.start);
-    const curEnd = this.timeToMinutes(currentAct.end);
+    const actDay = currentAct.day || this.currentDay;
+    const dayConf = this.config.days.find((d) => d.id === actDay) || this.getCurrentDayConfig();
+    const isOvernight = Boolean(dayConf.isOvernight);
 
-    const daySchedule = this.data[this.currentDay];
+    const curStart = this.timeToMinutes(currentAct.start, isOvernight);
+    const curEnd = this.timeToMinutes(currentAct.end, isOvernight);
+
+    const daySchedule = this.data[actDay] || {};
     const clashes = [];
 
     Object.values(daySchedule).forEach((stageActs) => {
       stageActs.forEach((act) => {
         if (act.id !== currentAct.id && this.favorites.has(act.id)) {
-          const aStart = this.timeToMinutes(act.start);
-          const aEnd = this.timeToMinutes(act.end);
+          const aStart = this.timeToMinutes(act.start, isOvernight);
+          const aEnd = this.timeToMinutes(act.end, isOvernight);
 
           // Overlap condition: max(start1, start2) < min(end1, end2)
           if (Math.max(curStart, aStart) < Math.min(curEnd, aEnd)) {
