@@ -690,6 +690,7 @@ class RheingruenApp {
   }
 
   updateFavoritesCount() {
+    if (!this.favCountBadge) return;
     const count = this.favorites.size;
     if (count > 0) {
       this.favCountBadge.textContent = count;

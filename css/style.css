@@ -252,22 +252,6 @@ html, body {
   stroke: #FF4B6E;
 }
 
-.fav-count-badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #FF4B6E;
-  color: #FFFFFF;
-  font-size: 0.65rem;
-  font-weight: 800;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .btn-sim.active {
   background: rgba(245, 158, 11, 0.2);
   border-color: #F59E0B;
