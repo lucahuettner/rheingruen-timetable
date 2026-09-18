@@ -697,25 +697,66 @@ class RheingruenApp {
       this.favorites.add(actId);
     }
     this.saveFavorites();
-    this.render();
 
-    // If modal is open for this act, update button state
-    if (this.currentModalAct && this.currentModalAct.id === actId) {
-      this.updateModalFavBtn(actId);
+    // If favorites-only filter is active, acts must be re-rendered to filter in/out
+    if (this.onlyFavorites) {
+      this.render(true);
+    } else {
+      // In-place UI update without full DOM recreation or scroll jump
+      this.updateActFavoriteUI(actId);
     }
+
+    // If modal is open, update button state and clash warnings
+    if (this.currentModalAct) {
+      if (this.currentModalAct.id === actId) {
+        this.updateModalFavBtn(actId);
+      }
+      this.checkClashes(this.currentModalAct);
+    }
+  }
+
+  updateActFavoriteUI(actId) {
+    const isFav = this.favorites.has(actId);
+
+    // 1. Update Grid View Cards
+    const gridCards = document.querySelectorAll(`.act-card[data-act-id="${CSS.escape(actId)}"]`);
+    gridCards.forEach((card) => {
+      card.classList.toggle("is-favorite", isFav);
+      const favBtn = card.querySelector(".card-fav-btn");
+      if (favBtn) {
+        favBtn.classList.toggle("favorited", isFav);
+        const svg = favBtn.querySelector("svg");
+        if (svg) {
+          svg.setAttribute("fill", isFav ? "#FF4B6E" : "none");
+        }
+      }
+    });
+
+    // 2. Update List View Cards
+    const listCards = document.querySelectorAll(`.list-item-card[data-act-id="${CSS.escape(actId)}"]`);
+    listCards.forEach((card) => {
+      const favBtn = card.querySelector(".card-fav-btn");
+      if (favBtn) {
+        favBtn.classList.toggle("favorited", isFav);
+        const svg = favBtn.querySelector("svg");
+        if (svg) {
+          svg.setAttribute("fill", isFav ? "#FF4B6E" : "none");
+        }
+      }
+    });
   }
 
   // --------------------------------------------------------------------------
   // Main Render Routine
   // --------------------------------------------------------------------------
-  render() {
+  render(preserveScroll = false) {
     this.updateFilterHints();
 
     const activeStages = this.getActiveStages();
     let totalVisibleActs = 0;
 
     if (this.viewMode === "grid") {
-      totalVisibleActs = this.renderGridView(activeStages);
+      totalVisibleActs = this.renderGridView(activeStages, preserveScroll);
     } else {
       totalVisibleActs = this.renderListView(activeStages);
     }
@@ -758,7 +799,10 @@ class RheingruenApp {
   // --------------------------------------------------------------------------
   // Render: Grid / Timetable View
   // --------------------------------------------------------------------------
-  renderGridView(activeStages) {
+  renderGridView(activeStages, preserveScroll = false) {
+    const prevScrollLeft = (preserveScroll && this.stagesColumnsContainer) ? this.stagesColumnsContainer.scrollLeft : 0;
+    const prevScrollTop = (preserveScroll && this.timetableBody) ? this.timetableBody.scrollTop : 0;
+
     this.stageHeadersList.innerHTML = "";
     this.stagesGridColumns.innerHTML = "";
 
@@ -771,10 +815,6 @@ class RheingruenApp {
     if (this.stagesScrollContent) this.stagesScrollContent.style.width = "";
     if (this.nowIndicatorLine) this.nowIndicatorLine.style.width = "";
     if (this.gridBackgroundLines) this.gridBackgroundLines.style.width = "";
-
-    // Reset horizontal scroll
-    if (this.stagesColumnsContainer) this.stagesColumnsContainer.scrollLeft = 0;
-    if (this.stageHeadersList) this.stageHeadersList.scrollLeft = 0;
 
     const daySchedule = this.data[this.currentDay] || {};
     const dayConf = this.getCurrentDayConfig();
@@ -858,7 +898,12 @@ class RheingruenApp {
       this.stagesGridColumns.appendChild(stageCol);
     });
 
-    this.updateGridWidth();
+    this.updateGridWidth(prevScrollLeft > 0 ? prevScrollLeft : null);
+
+    if (prevScrollTop > 0 && this.timetableBody) {
+      this.timetableBody.scrollTop = prevScrollTop;
+    }
+
     return totalActsRendered;
   }
 
@@ -996,7 +1041,7 @@ class RheingruenApp {
   // --------------------------------------------------------------------------
   // Update Scroll Track & Indicator Width
   // --------------------------------------------------------------------------
-  updateGridWidth() {
+  updateGridWidth(restoreScrollLeft = null) {
     requestAnimationFrame(() => {
       if (!this.stagesGridColumns || !this.nowIndicatorLine) return;
 
@@ -1034,6 +1079,12 @@ class RheingruenApp {
           this.gridBackgroundLines.style.width = pxStr;
         }
       }
+
+      if (restoreScrollLeft !== null && restoreScrollLeft > 0) {
+        if (this.stagesColumnsContainer) this.stagesColumnsContainer.scrollLeft = restoreScrollLeft;
+        if (this.stageHeadersList) this.stageHeadersList.scrollLeft = restoreScrollLeft;
+      }
+
       this.updateScrollArrows();
     });
   }
