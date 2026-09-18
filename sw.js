@@ -3,7 +3,7 @@
  * Cache-First Strategy with Network Fallback
  */
 
-const CACHE_NAME = "rheingruen-timetable-v21";
+const CACHE_NAME = "rheingruen-timetable-v22";
 
 const PRECACHE_ASSETS = [
   "./",
@@ -22,15 +22,20 @@ const PRECACHE_ASSETS = [
   "./icons/apple-touch-icon.png"
 ];
 
-// Install: Precache all essential assets
+// Install: Precache all essential assets (waits for client confirmation to activate)
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_ASSETS);
-    }).then(() => {
-      return self.skipWaiting();
     })
   );
+});
+
+// Message: Allow clients to prompt skipWaiting when user clicks "Neu laden"
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.action === "skipWaiting") {
+    self.skipWaiting();
+  }
 });
 
 // Activate: Clean up old caches and claim clients

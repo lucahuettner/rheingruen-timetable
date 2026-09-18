@@ -386,6 +386,25 @@
       </div>
     </div>
 
+    <!-- PWA Update Available Toast -->
+    <div id="pwa-update-toast" class="pwa-update-toast hidden" role="alert" aria-live="polite">
+      <div class="update-toast-body">
+        <div class="update-toast-icon-wrap" aria-hidden="true">
+          <svg class="update-toast-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+        </div>
+        <div class="update-toast-info">
+          <span class="update-toast-title">Neue Version verfügbar</span>
+          <span class="update-toast-sub">Tippe um neu zu laden</span>
+        </div>
+      </div>
+      <div class="update-toast-actions">
+        <button id="btn-pwa-reload" class="btn-update-reload">Neu laden</button>
+        <button id="btn-update-close" class="btn-update-close" aria-label="Später schließen" title="Später">✕</button>
+      </div>
+    </div>
+
     <!-- iOS PWA Install Guidance Popup (if needed) -->
     <div id="ios-install-toast" class="ios-install-toast hidden">
       <div class="ios-toast-content">

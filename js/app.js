@@ -243,6 +243,12 @@ class RheingruenApp {
     // iOS Toast
     this.iosInstallToast = document.getElementById("ios-install-toast");
     this.iosToastClose = document.getElementById("ios-toast-close");
+
+    // PWA Update Toast
+    this.pwaUpdateToast = document.getElementById("pwa-update-toast");
+    this.btnPwaReload = document.getElementById("btn-pwa-reload");
+    this.btnUpdateClose = document.getElementById("btn-update-close");
+    this.waitingWorker = null;
   }
 
   // --------------------------------------------------------------------------
@@ -1397,19 +1403,105 @@ class RheingruenApp {
   // PWA Service Worker & Install Prompt
   // --------------------------------------------------------------------------
   initServiceWorker() {
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("./sw.js")
-          .then((reg) => {
-            console.log("[PWA] ServiceWorker registered with scope:", reg.scope);
-            // Proactively check for new version on GitHub
-            reg.update().catch(() => {});
-          })
-          .catch((err) => {
-            console.warn("[PWA] ServiceWorker registration failed:", err);
+    if (!("serviceWorker" in navigator)) return;
+
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("./sw.js")
+        .then((reg) => {
+          console.log("[PWA] ServiceWorker registered with scope:", reg.scope);
+
+          // 1. If a worker is already waiting from a previous visit/background fetch
+          if (reg.waiting) {
+            this.showUpdateToast(reg.waiting);
+          }
+
+          // 2. Listen for newly discovered service worker updates
+          reg.addEventListener("updatefound", () => {
+            const newWorker = reg.installing;
+            if (!newWorker) return;
+
+            newWorker.addEventListener("statechange", () => {
+              // Only notify if newWorker is installed and there is an existing controller (meaning it's an update)
+              if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                this.showUpdateToast(newWorker);
+              }
+            });
           });
+
+          // Proactively check for new version on GitHub
+          reg.update().catch(() => {});
+
+          // Check on app visibility resume / tab focus
+          document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") {
+              reg.update().catch(() => {});
+            }
+          });
+
+          window.addEventListener("focus", () => {
+            reg.update().catch(() => {});
+          });
+
+          // Periodic update check every 15 minutes
+          setInterval(() => {
+            reg.update().catch(() => {});
+          }, 15 * 60 * 1000);
+        })
+        .catch((err) => {
+          console.warn("[PWA] ServiceWorker registration failed:", err);
+        });
+    });
+  }
+
+  showUpdateToast(worker) {
+    this.waitingWorker = worker;
+    if (!this.pwaUpdateToast) return;
+
+    // Hide iOS install prompt if currently shown to prevent clutter
+    this.iosInstallToast?.classList.add("hidden");
+
+    this.pwaUpdateToast.classList.remove("hidden");
+
+    let refreshing = false;
+    const triggerReload = () => {
+      if (refreshing) return;
+      refreshing = true;
+
+      // Reload page once new service worker activates and takes control
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        window.location.reload();
       });
+
+      if (this.waitingWorker) {
+        this.waitingWorker.postMessage({ action: "skipWaiting" });
+      } else {
+        window.location.reload();
+      }
+
+      // Safety fallback in case controllerchange does not fire within 800ms
+      setTimeout(() => {
+        window.location.reload();
+      }, 800);
+    };
+
+    if (this.btnPwaReload) {
+      this.btnPwaReload.onclick = (e) => {
+        e.stopPropagation();
+        triggerReload();
+      };
+    }
+
+    // Tapping anywhere on the toast card also triggers reload
+    this.pwaUpdateToast.onclick = () => {
+      triggerReload();
+    };
+
+    if (this.btnUpdateClose) {
+      this.btnUpdateClose.onclick = (e) => {
+        e.stopPropagation();
+        this.pwaUpdateToast.classList.add("hidden");
+      };
     }
   }
 

@@ -1544,6 +1544,157 @@ html, body {
 }
 
 /* --------------------------------------------------------------------------
+   PWA UPDATE AVAILABLE TOAST
+   -------------------------------------------------------------------------- */
+.pwa-update-toast {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+  left: 14px;
+  right: 14px;
+  max-width: 480px;
+  margin: 0 auto;
+  background: rgba(11, 20, 15, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--neon-green);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.85), 0 0 20px var(--neon-green-glow);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 1000;
+  cursor: pointer;
+  animation: updateToastSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes updateToastSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.update-toast-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.update-toast-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--neon-green-subtle);
+  border: 1px solid rgba(0, 255, 135, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neon-green);
+  flex-shrink: 0;
+}
+
+.update-toast-icon {
+  animation: updateIconSpin 4s linear infinite;
+}
+
+@keyframes updateIconSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.update-toast-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.update-toast-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.update-toast-sub {
+  font-size: 0.72rem;
+  color: var(--neon-green);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.update-toast-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-update-reload {
+  background: var(--neon-green);
+  color: #050907;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 0 12px var(--neon-green-glow);
+  transition: all 0.2s ease;
+}
+
+.btn-update-reload:hover,
+.btn-update-reload:active {
+  background: #20ff98;
+  transform: scale(1.04);
+  box-shadow: 0 0 16px rgba(0, 255, 135, 0.6);
+}
+
+.btn-update-close {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s;
+}
+
+.btn-update-close:hover,
+.btn-update-close:active {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.95);
+}
+
+/* --------------------------------------------------------------------------
    IOS PWA INSTALL BANNER
    -------------------------------------------------------------------------- */
 .ios-install-toast {
