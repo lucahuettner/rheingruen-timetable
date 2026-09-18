@@ -3,7 +3,7 @@
  * Cache-First Strategy with Network Fallback
  */
 
-const CACHE_NAME = "rheingruen-timetable-v23";
+const CACHE_NAME = "rheingruen-timetable-v24";
 
 const PRECACHE_ASSETS = [
   "./",
@@ -14,6 +14,11 @@ const PRECACHE_ASSETS = [
   "./js/schedule-data.js",
   "./js/app.js",
   "./manifest.webmanifest",
+  "./fonts/barlow-latin-400.woff2",
+  "./fonts/barlow-latin-500.woff2",
+  "./fonts/barlow-latin-600.woff2",
+  "./fonts/barlow-latin-700.woff2",
+  "./fonts/barlow-latin-800.woff2",
   "./icons/icon.svg",
   "./icons/logo-white.png",
   "./icons/icon-192.png",
