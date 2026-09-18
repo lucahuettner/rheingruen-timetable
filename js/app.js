@@ -21,12 +21,8 @@ class RheingruenApp {
       });
     });
 
-    this.lastIsoDate = this.getLocalDateIso();
-
     // Application State
     this.currentDay = this.detectInitialDay();
-    this.currentCategory = this.getCurrentDayConfig().category || "festival";
-    this.stageFilter = "all"; // "all" | "mainstage" | "f2f" | "hidden"
     this.viewMode = "grid";   // "grid" | "list"
     this.searchQuery = "";
     this.onlyFavorites = false;
@@ -92,37 +88,6 @@ class RheingruenApp {
     return `${year}-${month}-${day}`;
   }
 
-  isWithinDayHours(minutes, dayConf) {
-    const isOvernight = Boolean(dayConf.isOvernight);
-    const startMins = dayConf.startHour * 60;
-    const endMins = dayConf.endHour * 60;
-
-    if (isOvernight && endMins < startMins) {
-      return minutes >= startMins || minutes <= endMins;
-    }
-    return minutes >= startMins && minutes <= endMins;
-  }
-
-  isActualFestivalDay(dayId) {
-    const now = new Date();
-    const localIsoDate = this.getLocalDateIso(now);
-    const hour = now.getHours();
-
-    if (dayId === "friday_pre") {
-      return localIsoDate === "2026-09-18" || (localIsoDate === "2026-09-19" && hour < 6);
-    }
-    if (dayId === "saturday") {
-      return localIsoDate === "2026-09-19" && hour >= 6 && hour < 22;
-    }
-    if (dayId === "saturday_after") {
-      return (localIsoDate === "2026-09-19" && hour >= 22) || (localIsoDate === "2026-09-20" && hour < 9);
-    }
-    if (dayId === "sunday") {
-      return localIsoDate === "2026-09-20" && hour >= 9 && hour < 24;
-    }
-    return false;
-  }
-
   detectInitialDay() {
     const urlParams = new URLSearchParams(window.location.search);
     const dayParam = urlParams.get("day");
@@ -174,7 +139,6 @@ class RheingruenApp {
     this.btnJumpNow = document.getElementById("btn-jump-now");
     this.headerNowBadge = document.getElementById("header-now-badge");
     this.btnFavFilter = document.getElementById("btn-fav-filter");
-    this.favCountBadge = document.getElementById("fav-count-badge");
     this.btnPwaInstall = document.getElementById("btn-pwa-install");
 
     // First-Visit Disclaimer
@@ -597,20 +561,9 @@ class RheingruenApp {
     });
   }
 
-  setCategory(category) {
-    if (category === "festival") {
-      this.setDay("saturday");
-    } else {
-      this.setDay("friday_pre");
-    }
-  }
-
   setDay(day) {
     if (this.currentDay === day) return;
     this.currentDay = day;
-
-    const dayConf = this.getCurrentDayConfig();
-    this.currentCategory = dayConf.category || "festival";
 
     this.updatePillsUI(day);
 
@@ -744,7 +697,6 @@ class RheingruenApp {
       this.favorites.add(actId);
     }
     this.saveFavorites();
-    this.updateFavoritesCount();
     this.render();
 
     // If modal is open for this act, update button state
@@ -753,22 +705,10 @@ class RheingruenApp {
     }
   }
 
-  updateFavoritesCount() {
-    if (!this.favCountBadge) return;
-    const count = this.favorites.size;
-    if (count > 0) {
-      this.favCountBadge.textContent = count;
-      this.favCountBadge.classList.remove("hidden");
-    } else {
-      this.favCountBadge.classList.add("hidden");
-    }
-  }
-
   // --------------------------------------------------------------------------
   // Main Render Routine
   // --------------------------------------------------------------------------
   render() {
-    this.updateFavoritesCount();
     this.updateFilterHints();
 
     const activeStages = this.getActiveStages();
@@ -1051,18 +991,6 @@ class RheingruenApp {
     const endMins = this.timeToMinutes(act.end, isOvernight);
 
     return currentMins >= startMins && currentMins < endMins;
-  }
-
-  isActualFestivalWeekend() {
-    const now = new Date();
-    const localIsoDate = this.getLocalDateIso(now);
-    const hour = now.getHours();
-    return (
-      localIsoDate === "2026-09-18" ||
-      localIsoDate === "2026-09-19" ||
-      localIsoDate === "2026-09-20" ||
-      (localIsoDate === "2026-09-21" && hour < 9)
-    );
   }
 
   // --------------------------------------------------------------------------

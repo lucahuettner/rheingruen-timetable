@@ -58,16 +58,12 @@
   --bg-surface-card: #121c17;
   
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(0, 255, 135, 0.4);
 
   /* Neon Brand Accents */
   --neon-green: #00FF87;
-  --forest-green: #40916c;
   --neon-green-glow: rgba(0, 255, 135, 0.35);
   --neon-green-subtle: rgba(0, 255, 135, 0.12);
   --neon-cyan: #60EFFF;
-  --neon-cyan-glow: rgba(96, 239, 255, 0.35);
-  --neon-cyan-subtle: rgba(96, 239, 255, 0.12);
 
   --stage-mainstage: #00FF87;
   --stage-f2f: #60EFFF;
@@ -78,7 +74,6 @@
   --text-muted: #64748B;
 
   /* Sizing & Geometry */
-  --header-height: auto;
   --time-axis-width: 62px;
   --stage-col-min-width: 250px;
   --px-per-minute: 2px; /* 60 min = 120px */
@@ -89,8 +84,7 @@
   --radius-lg: 16px;
   --radius-pill: 9999px;
 
-  /* Shadows & Glows */
-  --glow-green: 0 0 20px var(--neon-green-glow);
+  /* Shadows */
   --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.6);
 }
 
@@ -157,20 +151,6 @@ html, body {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.brand-logo-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.brand-icon {
-  width: 28px;
-  height: 34px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.2));
 }
 
 @keyframes pulse-dot {
@@ -296,136 +276,11 @@ html, body {
   stroke: #FF4B6E;
 }
 
-.btn-sim.active {
-  background: rgba(245, 158, 11, 0.2);
-  border-color: #F59E0B;
-  color: #F59E0B;
-}
-
 .btn-install {
   background: var(--neon-green);
   color: #000000;
   font-weight: 700;
   border: none;
-}
-
-/* Time Simulator Panel */
-.sim-panel {
-  background: var(--bg-surface-elevated);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
-  margin-top: 4px;
-  animation: slide-down 0.25s ease-out;
-}
-
-@keyframes slide-down {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.sim-panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.sim-title {
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: #F59E0B;
-}
-
-.sim-hint {
-  display: block;
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-}
-
-.switch-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.switch-label input {
-  display: none;
-}
-
-.switch-slider {
-  width: 34px;
-  height: 18px;
-  background: #334155;
-  border-radius: 10px;
-  position: relative;
-  transition: 0.3s;
-}
-
-.switch-slider::before {
-  content: "";
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: white;
-  top: 2px;
-  left: 2px;
-  transition: 0.3s;
-}
-
-.switch-label input:checked + .switch-slider {
-  background: #F59E0B;
-}
-
-.switch-label input:checked + .switch-slider::before {
-  transform: translateX(16px);
-}
-
-.sim-slider-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.sim-time-display {
-  font-family: monospace;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #F59E0B;
-  min-width: 50px;
-}
-
-.sim-slider {
-  flex: 1;
-  accent-color: #F59E0B;
-  cursor: pointer;
-}
-
-.sim-presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.sim-preset-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  font-size: 0.7rem;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-
-.sim-preset-btn:hover {
-  background: rgba(245, 158, 11, 0.15);
-  color: #F8FAFC;
-  border-color: #F59E0B;
 }
 
 /* ==========================================================================
@@ -832,12 +687,6 @@ html, body {
 .stage-header-item.header-gotec_cube .stage-header-name { color: var(--stage-hidden); }
 .stage-header-item.header-elfino .stage-header-name { color: #F59E0B; }
 
-.stage-header-count {
-  font-size: 0.68rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
 /* Timetable Body (Scroll Area) */
 .timetable-body {
   display: flex;
@@ -1237,18 +1086,6 @@ html, body {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.card-special-badge {
-  display: inline-block;
-  font-size: 0.65rem;
-  font-weight: 800;
-  background: rgba(255, 215, 0, 0.2);
-  color: #FFD700;
-  border: 1px solid rgba(255, 215, 0, 0.4);
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-top: 4px;
 }
 
 /* Card Footer */
@@ -1837,11 +1674,6 @@ html, body {
   }
 
   .app-header {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .search-wrap {
     padding-left: 20px;
     padding-right: 20px;
   }

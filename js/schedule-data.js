@@ -9,10 +9,6 @@
 export const FESTIVAL_CONFIG = {
   name: "Rheingrün Festival",
   edition: "2026",
-  categories: [
-    { id: "festival", label: "Festival", icon: "🎪" },
-    { id: "club", label: "Club", icon: "🌙" }
-  ],
   dates: {
     friday_pre: "2026-09-18",
     saturday: "2026-09-19",
