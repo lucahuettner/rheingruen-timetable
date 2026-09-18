@@ -3,12 +3,13 @@
  * Cache-First Strategy with Network Fallback
  */
 
-const CACHE_NAME = "rheingruen-timetable-v22";
+const CACHE_NAME = "rheingruen-timetable-v23";
 
 const PRECACHE_ASSETS = [
   "./",
   "./index.html",
   "./favicon.ico",
+  "./robots.txt",
   "./css/style.css",
   "./js/schedule-data.js",
   "./js/app.js",
