@@ -10,6 +10,19 @@ class RheingruenApp {
     this.config = FESTIVAL_CONFIG;
     this.data = SCHEDULE_DATA;
 
+    // Fast O(1) Act Lookup Map
+    this.actsById = new Map();
+    Object.entries(this.data).forEach(([dayId, stages]) => {
+      Object.values(stages).forEach((acts) => {
+        acts.forEach((act) => {
+          if (!act.day) act.day = dayId;
+          this.actsById.set(act.id, act);
+        });
+      });
+    });
+
+    this.lastIsoDate = this.getLocalDateIso();
+
     // Application State
     this.currentDay = this.detectInitialDay();
     this.currentCategory = this.getCurrentDayConfig().category || "festival";
@@ -47,6 +60,7 @@ class RheingruenApp {
     setInterval(() => {
       this.nowMinutes = this.calculateCurrentMinutes();
       this.updateLiveIndicator();
+      this.updateLiveCards();
     }, 10000);
 
     // Check first-visit disclaimer
@@ -435,6 +449,21 @@ class RheingruenApp {
       this.updateGridWidth();
       this.updateScrollArrows();
     }, { passive: true });
+
+    // Resume / Wake from mobile background: immediately sync clock, line & cards
+    const handleResume = () => {
+      this.nowMinutes = this.calculateCurrentMinutes();
+      this.updateLiveIndicator();
+      this.updateLiveCards();
+    };
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        handleResume();
+      }
+    });
+    window.addEventListener("pageshow", handleResume);
+    window.addEventListener("focus", handleResume);
   }
 
   initDesktopScrollHelpers() {
@@ -923,6 +952,7 @@ class RheingruenApp {
       const card = document.createElement("div");
       card.className = `list-item-card ${isLive ? "is-live" : ""}`;
       card.dataset.stage = act.stage;
+      card.dataset.actId = act.id;
 
       card.innerHTML = `
         <div class="list-time-block">
@@ -1076,6 +1106,66 @@ class RheingruenApp {
     } else {
       this.nowIndicatorLine.style.display = "none";
     }
+
+    this.updateLiveCards();
+  }
+
+  // --------------------------------------------------------------------------
+  // Dynamic Live State Updates on Act Cards (Real-Time & Resume Sync)
+  // --------------------------------------------------------------------------
+  updateLiveCards() {
+    // 1. Update Grid View Cards
+    const gridCards = document.querySelectorAll(".act-card[data-act-id]");
+    gridCards.forEach((card) => {
+      const actId = card.dataset.actId;
+      const act = this.actsById.get(actId);
+      if (!act) return;
+
+      const isLive = this.isActLive(act);
+      const wasLive = card.classList.contains("is-live");
+
+      if (isLive !== wasLive) {
+        card.classList.toggle("is-live", isLive);
+        const timeWrap = card.querySelector(".card-time-wrap");
+        if (timeWrap) {
+          const existingPill = timeWrap.querySelector(".card-live-pill");
+          if (isLive && !existingPill) {
+            const pill = document.createElement("span");
+            pill.className = "card-live-pill";
+            pill.textContent = "LIVE";
+            timeWrap.appendChild(pill);
+          } else if (!isLive && existingPill) {
+            existingPill.remove();
+          }
+        }
+      }
+    });
+
+    // 2. Update List View Cards
+    const listCards = document.querySelectorAll(".list-item-card[data-act-id]");
+    listCards.forEach((card) => {
+      const actId = card.dataset.actId;
+      const act = this.actsById.get(actId);
+      if (!act) return;
+
+      const isLive = this.isActLive(act);
+      const wasLive = card.classList.contains("is-live");
+
+      if (isLive !== wasLive) {
+        card.classList.toggle("is-live", isLive);
+        const durSpan = card.querySelector(".list-duration");
+        if (durSpan) {
+          const actOvernight = Boolean(act.dayConfig?.isOvernight);
+          const durationMin = this.getDurationMinutes(act.start, act.end, actOvernight);
+          durSpan.innerHTML = `${durationMin} Min.${isLive ? ' · <strong style="color:var(--neon-green)">JETZT</strong>' : ''}`;
+        }
+      }
+    });
+
+    // 3. Update Modal if open
+    if (this.currentModalAct && this.actModal && !this.actModal.classList.contains("hidden")) {
+      this.updateModalStatus(this.currentModalAct);
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -1169,6 +1259,26 @@ class RheingruenApp {
     const durationMin = this.getDurationMinutes(act.start, act.end, isOvernight);
     this.modalDuration.textContent = `(${durationMin} Min.)`;
 
+    this.updateModalStatus(act);
+
+    // Clash Detection with user's other favorites
+    this.checkClashes(act);
+
+    // Favorite Button State
+    this.updateModalFavBtn(act.id);
+    this.modalFavBtn.onclick = () => this.toggleFavorite(act.id);
+
+    // Open Modal
+    this.actModal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  updateModalStatus(act) {
+    if (!act) return;
+    const actDay = act.day || this.currentDay;
+    const dayConf = this.config.days.find((d) => d.id === actDay) || this.getCurrentDayConfig();
+    const isOvernight = Boolean(dayConf.isOvernight);
+
     const isLive = this.isActLive(act);
     this.modalLivePill.classList.toggle("hidden", !isLive);
 
@@ -1195,17 +1305,6 @@ class RheingruenApp {
       this.modalStatusIcon.textContent = "✓";
       this.modalStatusText.textContent = `Dieses Set ist bereits beendet.`;
     }
-
-    // Clash Detection with user's other favorites
-    this.checkClashes(act);
-
-    // Favorite Button State
-    this.updateModalFavBtn(act.id);
-    this.modalFavBtn.onclick = () => this.toggleFavorite(act.id);
-
-    // Open Modal
-    this.actModal.classList.remove("hidden");
-    document.body.style.overflow = "hidden";
   }
 
   checkClashes(currentAct) {
