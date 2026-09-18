@@ -167,33 +167,44 @@
 
         <!-- Timetable Body: Left Sticky Time Axis + Stage Swimlanes -->
         <div class="timetable-body" id="timetable-body">
-          <!-- Time Axis Column (Sticky Left) -->
-          <div class="time-axis-column" id="time-axis-column" aria-hidden="true">
-            <!-- Rendered dynamically (11:00 to 23:00) -->
-          </div>
+          <div class="timetable-grid-content" id="timetable-grid-content">
+            <!-- Time Axis Column (Sticky Left) -->
+            <div class="time-axis-column" id="time-axis-column" aria-hidden="true">
+              <!-- Rendered dynamically (11:00 to 23:00) -->
+            </div>
 
-          <!-- Stages Columns Container (Horizontally Scrollable on Mobile) -->
-          <div class="stages-columns-container" id="stages-columns-container">
-            <div class="stages-scroll-content" id="stages-scroll-content">
-              <!-- Grid Background Lines -->
-              <div class="grid-background-lines" id="grid-background-lines" aria-hidden="true"></div>
+            <!-- Stages Columns Container (Horizontally Scrollable on Mobile) -->
+            <div class="stages-columns-container" id="stages-columns-container">
+              <div class="stages-scroll-content" id="stages-scroll-content">
+                <!-- Grid Background Lines -->
+                <div class="grid-background-lines" id="grid-background-lines" aria-hidden="true"></div>
 
-              <!-- Current Time Line Indicator -->
-              <div class="now-indicator-line" id="now-indicator-line">
-                <div class="now-line-badge">
-                  <span class="now-pulse-dot"></span>
-                  <span id="now-line-text" class="now-line-time">--:--</span>
-                  <span class="now-line-label">JETZT</span>
+                <!-- Current Time Line Indicator -->
+                <div class="now-indicator-line" id="now-indicator-line">
+                  <div class="now-line-badge">
+                    <span class="now-pulse-dot"></span>
+                    <span id="now-line-text" class="now-line-time">--:--</span>
+                    <span class="now-line-label">JETZT</span>
+                  </div>
+                  <div class="now-line-bar"></div>
                 </div>
-                <div class="now-line-bar"></div>
-              </div>
 
-              <!-- Stage Columns -->
-              <div class="stages-grid-columns" id="stages-grid-columns">
-                <!-- Rendered dynamically per day -->
+                <!-- Stage Columns -->
+                <div class="stages-grid-columns" id="stages-grid-columns">
+                  <!-- Rendered dynamically per day -->
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- Main Page Timetable Footer (Grid View) -->
+          <footer class="timetable-main-footer">
+            <div class="timetable-footer-inner">
+              <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
+              <span class="mini-links-sep">·</span>
+              <button class="btn-mini-textlink btn-footer-privacy" type="button">Datenschutzerklärung</button>
+            </div>
+          </footer>
         </div>
       </div>
 
@@ -202,6 +213,15 @@
         <div class="list-cards-wrapper" id="list-cards-wrapper">
           <!-- Rendered dynamically in chronological order -->
         </div>
+
+        <!-- Main Page Timetable Footer (List View) -->
+        <footer class="timetable-main-footer">
+          <div class="timetable-footer-inner">
+            <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
+            <span class="mini-links-sep">·</span>
+            <button class="btn-mini-textlink btn-footer-privacy" type="button">Datenschutzerklärung</button>
+          </div>
+        </footer>
       </div>
 
       <!-- Empty State (e.g. no favorites match filter) -->
@@ -214,6 +234,15 @@
         <h3 class="empty-state-title">Keine Acts gefunden</h3>
         <p class="empty-state-desc" id="empty-state-desc">Markiere Acts mit dem Herz-Symbol, um deinen persönlichen Zeitplan zusammenzustellen.</p>
         <button id="empty-reset-btn" class="btn-neon-outline">Alle Acts anzeigen</button>
+
+        <!-- Main Page Timetable Footer (Empty State) -->
+        <footer class="timetable-main-footer empty-state-footer">
+          <div class="timetable-footer-inner">
+            <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
+            <span class="mini-links-sep">·</span>
+            <button class="btn-mini-textlink btn-footer-privacy" type="button">Datenschutzerklärung</button>
+          </div>
+        </footer>
       </div>
     </main>
 

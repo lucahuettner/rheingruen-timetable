@@ -440,6 +440,9 @@ class RheingruenApp {
     if (this.btnInfoPrivacy) {
       this.btnInfoPrivacy.addEventListener("click", () => this.openPrivacyModal());
     }
+    document.querySelectorAll(".btn-footer-privacy").forEach((btn) => {
+      btn.addEventListener("click", () => this.openPrivacyModal());
+    });
     if (this.privacyModalCloseBtn) {
       this.privacyModalCloseBtn.addEventListener("click", () => this.closePrivacyModal());
     }

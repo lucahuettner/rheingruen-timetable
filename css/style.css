@@ -841,12 +841,21 @@ html, body {
 /* Timetable Body (Scroll Area) */
 .timetable-body {
   display: flex;
+  flex-direction: column;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Timetable Grid Content Row (Time Axis + Stages) */
+.timetable-grid-content {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  width: 100%;
 }
 
 /* Sticky Time Axis (Left Column) */
@@ -1277,7 +1286,7 @@ html, body {
   gap: 8px;
   max-width: 680px;
   margin: 0 auto;
-  padding-bottom: 70px;
+  padding-bottom: 24px;
 }
 
 .list-item-card {
@@ -2315,4 +2324,34 @@ body.is-dragging-timetable .stage-headers-list {
 .btn-confirm-privacy:active {
   background: rgba(0, 255, 135, 0.15);
   box-shadow: 0 0 12px var(--neon-green-glow);
+}
+
+/* --------------------------------------------------------------------------
+   TIMETABLE MAIN FOOTER (Grid, List, Empty State)
+   -------------------------------------------------------------------------- */
+.timetable-main-footer {
+  width: 100%;
+  padding: 24px 16px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-black);
+  border-top: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.timetable-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.empty-state-footer {
+  margin-top: 28px;
+  background: transparent;
+  border-top: none;
+  padding: 12px 16px 0;
 }
