@@ -2165,13 +2165,37 @@ body.is-dragging-timetable .stage-headers-list {
 }
 
 /* --------------------------------------------------------------------------
-   MINI PRIVACY TEXTLINK & PRIVACY MODAL
+   MINI PRIVACY & AUTHOR TEXTLINKS & PRIVACY MODAL
    -------------------------------------------------------------------------- */
+.disclaimer-author-link {
+  color: var(--neon-green);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.2s ease;
+}
+
+.disclaimer-author-link:hover,
+.disclaimer-author-link:active {
+  opacity: 0.8;
+}
+
 .disclaimer-mini-links,
 .info-mini-links {
   display: flex;
+  align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px;
   margin-top: 12px;
+}
+
+.mini-links-sep {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  opacity: 0.45;
+  user-select: none;
+  padding: 0 3px;
 }
 
 .btn-mini-textlink {
@@ -2184,9 +2208,11 @@ body.is-dragging-timetable .stage-headers-list {
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 3px 6px;
   transition: color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
+  display: inline-flex;
+  align-items: center;
 }
 
 .btn-mini-textlink:hover,
