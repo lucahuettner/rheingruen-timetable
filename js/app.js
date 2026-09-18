@@ -177,17 +177,11 @@ class RheingruenApp {
     this.favCountBadge = document.getElementById("fav-count-badge");
     this.btnPwaInstall = document.getElementById("btn-pwa-install");
 
-    // Info Modal Sheet
-    this.infoModal = document.getElementById("info-modal");
-    this.infoModalBackdrop = document.getElementById("info-modal-backdrop");
-    this.infoModalCloseBtn = document.getElementById("info-modal-close-btn");
-
     // First-Visit Disclaimer
     this.disclaimerModal = document.getElementById("disclaimer-modal");
     this.disclaimerBackdrop = document.querySelector("#disclaimer-modal .disclaimer-backdrop");
     this.disclaimerCloseBtn = document.getElementById("disclaimer-close-btn");
     this.btnDismissDisclaimer = document.getElementById("btn-dismiss-disclaimer");
-    this.btnInfoDisclaimer = document.getElementById("btn-info-disclaimer");
 
     // Day & Event Navigation (Single Unified Bar)
     this.eventPillsNav = document.getElementById("event-pills-nav");
@@ -262,7 +256,6 @@ class RheingruenApp {
     this.privacyModalCloseBtn = document.getElementById("privacy-modal-close-btn");
     this.btnClosePrivacy = document.getElementById("btn-close-privacy");
     this.btnOpenPrivacy = document.getElementById("btn-open-privacy");
-    this.btnInfoPrivacy = document.getElementById("btn-info-privacy");
   }
 
   // --------------------------------------------------------------------------
@@ -423,17 +416,6 @@ class RheingruenApp {
     this.modalCloseBtn.addEventListener("click", () => this.closeModal());
     this.modalBackdrop.addEventListener("click", () => this.closeModal());
 
-    // Festival Info Sheet Handlers
-    if (this.btnInfoSheet) {
-      this.btnInfoSheet.addEventListener("click", () => this.openInfoModal());
-    }
-    if (this.infoModalCloseBtn) {
-      this.infoModalCloseBtn.addEventListener("click", () => this.closeInfoModal());
-    }
-    if (this.infoModalBackdrop) {
-      this.infoModalBackdrop.addEventListener("click", () => this.closeInfoModal());
-    }
-
     // Disclaimer Modal Handlers
     if (this.btnDismissDisclaimer) {
       this.btnDismissDisclaimer.addEventListener("click", () => this.dismissDisclaimer());
@@ -447,19 +429,10 @@ class RheingruenApp {
     document.querySelectorAll(".btn-footer-disclaimer").forEach((btn) => {
       btn.addEventListener("click", () => this.openDisclaimerModal());
     });
-    if (this.btnInfoDisclaimer) {
-      this.btnInfoDisclaimer.addEventListener("click", () => {
-        this.closeInfoModal();
-        this.openDisclaimerModal();
-      });
-    }
 
     // Privacy Policy Modal Handlers
     if (this.btnOpenPrivacy) {
       this.btnOpenPrivacy.addEventListener("click", () => this.openPrivacyModal());
-    }
-    if (this.btnInfoPrivacy) {
-      this.btnInfoPrivacy.addEventListener("click", () => this.openPrivacyModal());
     }
     document.querySelectorAll(".btn-footer-privacy").forEach((btn) => {
       btn.addEventListener("click", () => this.openPrivacyModal());
@@ -500,7 +473,6 @@ class RheingruenApp {
           return;
         }
         this.closeModal();
-        this.closeInfoModal();
       }
     });
 
@@ -1415,20 +1387,6 @@ class RheingruenApp {
     this.currentModalAct = null;
   }
 
-  openInfoModal() {
-    if (this.infoModal) {
-      this.infoModal.classList.remove("hidden");
-      document.body.style.overflow = "hidden";
-    }
-  }
-
-  closeInfoModal() {
-    if (this.infoModal) {
-      this.infoModal.classList.add("hidden");
-      document.body.style.overflow = "";
-    }
-  }
-
   // --------------------------------------------------------------------------
   // First-Visit Disclaimer
   // --------------------------------------------------------------------------
@@ -1460,9 +1418,8 @@ class RheingruenApp {
     if (this.disclaimerModal) {
       this.disclaimerModal.classList.add("hidden");
       const isPrivacyOpen = this.privacyModal && !this.privacyModal.classList.contains("hidden");
-      const isInfoOpen = this.infoModal && !this.infoModal.classList.contains("hidden");
       const isActOpen = this.actModal && !this.actModal.classList.contains("hidden");
-      if (!isPrivacyOpen && !isInfoOpen && !isActOpen) {
+      if (!isPrivacyOpen && !isActOpen) {
         document.body.style.overflow = "";
       }
     }
@@ -1482,9 +1439,8 @@ class RheingruenApp {
     if (this.privacyModal) {
       this.privacyModal.classList.add("hidden");
       const isDisclaimerOpen = this.disclaimerModal && !this.disclaimerModal.classList.contains("hidden");
-      const isInfoOpen = this.infoModal && !this.infoModal.classList.contains("hidden");
       const isActOpen = this.actModal && !this.actModal.classList.contains("hidden");
-      if (!isDisclaimerOpen && !isInfoOpen && !isActOpen) {
+      if (!isDisclaimerOpen && !isActOpen) {
         document.body.style.overflow = "";
       }
     }
