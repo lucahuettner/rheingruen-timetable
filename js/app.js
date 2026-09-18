@@ -249,6 +249,14 @@ class RheingruenApp {
     this.btnPwaReload = document.getElementById("btn-pwa-reload");
     this.btnUpdateClose = document.getElementById("btn-update-close");
     this.waitingWorker = null;
+
+    // Privacy Modal
+    this.privacyModal = document.getElementById("privacy-modal");
+    this.privacyModalBackdrop = document.getElementById("privacy-modal-backdrop");
+    this.privacyModalCloseBtn = document.getElementById("privacy-modal-close-btn");
+    this.btnClosePrivacy = document.getElementById("btn-close-privacy");
+    this.btnOpenPrivacy = document.getElementById("btn-open-privacy");
+    this.btnInfoPrivacy = document.getElementById("btn-info-privacy");
   }
 
   // --------------------------------------------------------------------------
@@ -425,6 +433,23 @@ class RheingruenApp {
       this.btnDismissDisclaimer.addEventListener("click", () => this.dismissDisclaimer());
     }
 
+    // Privacy Policy Modal Handlers
+    if (this.btnOpenPrivacy) {
+      this.btnOpenPrivacy.addEventListener("click", () => this.openPrivacyModal());
+    }
+    if (this.btnInfoPrivacy) {
+      this.btnInfoPrivacy.addEventListener("click", () => this.openPrivacyModal());
+    }
+    if (this.privacyModalCloseBtn) {
+      this.privacyModalCloseBtn.addEventListener("click", () => this.closePrivacyModal());
+    }
+    if (this.btnClosePrivacy) {
+      this.btnClosePrivacy.addEventListener("click", () => this.closePrivacyModal());
+    }
+    if (this.privacyModalBackdrop) {
+      this.privacyModalBackdrop.addEventListener("click", () => this.closePrivacyModal());
+    }
+
     // Desktop Stage Scroll Buttons
     if (this.btnScrollStagesLeft) {
       this.btnScrollStagesLeft.addEventListener("click", () => {
@@ -442,6 +467,10 @@ class RheingruenApp {
 
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
+        if (this.privacyModal && !this.privacyModal.classList.contains("hidden")) {
+          this.closePrivacyModal();
+          return;
+        }
         this.closeModal();
         this.closeInfoModal();
       }
@@ -1396,6 +1425,28 @@ class RheingruenApp {
     if (this.disclaimerModal) {
       this.disclaimerModal.classList.add("hidden");
       document.body.style.overflow = "";
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // Privacy Policy Modal
+  // --------------------------------------------------------------------------
+  openPrivacyModal() {
+    if (this.privacyModal) {
+      this.privacyModal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  closePrivacyModal() {
+    if (this.privacyModal) {
+      this.privacyModal.classList.add("hidden");
+      const isDisclaimerOpen = this.disclaimerModal && !this.disclaimerModal.classList.contains("hidden");
+      const isInfoOpen = this.infoModal && !this.infoModal.classList.contains("hidden");
+      const isActOpen = this.actModal && !this.actModal.classList.contains("hidden");
+      if (!isDisclaimerOpen && !isInfoOpen && !isActOpen) {
+        document.body.style.overflow = "";
+      }
     }
   }
 

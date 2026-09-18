@@ -332,6 +332,9 @@
           <a href="https://www.instagram.com/rheingruen_festival/" target="_blank" rel="noopener" class="btn-official-website btn-official-insta">
             Instagram (@rheingruen_festival) ↗
           </a>
+          <div class="info-mini-links">
+            <button id="btn-info-privacy" class="btn-mini-textlink" type="button">Datenschutzerklärung</button>
+          </div>
         </div>
       </div>
     </div>
@@ -386,6 +389,55 @@
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
           </button>
+          <div class="disclaimer-mini-links">
+            <button id="btn-open-privacy" class="btn-mini-textlink" type="button">Datenschutzerklärung</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy Policy / Datenschutzerklärung Modal -->
+    <div id="privacy-modal" class="act-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="privacy-modal-title">
+      <div class="act-modal-backdrop" id="privacy-modal-backdrop"></div>
+      <div class="act-modal-sheet privacy-modal-sheet">
+        <div class="modal-drag-handle" aria-hidden="true"></div>
+        <button class="modal-close-btn" id="privacy-modal-close-btn" aria-label="Schließen">✕</button>
+
+        <div class="modal-header">
+          <div class="modal-stage-badge" style="background:rgba(0, 255, 135, 0.15);color:var(--neon-green);">DATENSCHUTZ</div>
+          <h2 class="modal-artist" id="privacy-modal-title">Datenschutzerklärung</h2>
+          <div class="privacy-modal-contact">
+            <span class="privacy-contact-label">Verantwortlicher:</span> Luca Hüttner, <a href="mailto:timetable@huettner.dev" class="privacy-mail-link">timetable@huettner.dev</a>
+          </div>
+        </div>
+
+        <div class="modal-body privacy-modal-body">
+          <div class="privacy-card-highlight">
+            <p>Diese Web-App erhebt und speichert keine personenbezogenen Daten. Es gibt keine Cookies, kein Tracking, keine Analyse-Tools, keine eingebetteten Inhalte Dritter und keine Schriftarten von externen Servern.</p>
+          </div>
+
+          <div class="privacy-card">
+            <h3 class="privacy-card-title">Hosting</h3>
+            <p>Die Seite wird über GitHub Pages (GitHub Inc., San Francisco, USA – Microsoft-Gruppe) ausgeliefert. Beim Aufruf fallen dort technisch notwendige Server-Logdaten an (u. a. IP-Adresse, Zeitpunkt, aufgerufene Datei, Browsertyp). Auf diese Daten haben wir keinen Zugriff. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO, berechtigtes Interesse an einer sicheren Bereitstellung. GitHub ist unter dem EU-US Data Privacy Framework zertifiziert.</p>
+          </div>
+
+          <div class="privacy-card">
+            <h3 class="privacy-card-title">Lokale Speicherung</h3>
+            <p>Deine Favoriten und die Dateien für den Offline-Betrieb werden ausschließlich im Speicher deines Browsers abgelegt (localStorage und Cache). Sie verlassen dein Gerät nicht und dienen allein der von dir angeforderten Funktion (§ 25 Abs. 2 Nr. 2 TDDDG). Du kannst sie jederzeit über deine Browsereinstellungen löschen. Nach der Installation funktioniert die App vollständig ohne Verbindung zu einem Server.</p>
+          </div>
+
+          <div class="privacy-card">
+            <h3 class="privacy-card-title">Deine Rechte</h3>
+            <p>Dir stehen die Rechte aus Art. 15–21 DSGVO zu (Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch) sowie ein Beschwerderecht bei einer Aufsichtsbehörde – für Baden-Württemberg beim LfDI (<a href="https://www.baden-wuerttemberg.datenschutz.de/" target="_blank" rel="noopener" class="privacy-ext-link">lfdi.baden-wuerttemberg.de</a>). Anfragen an die oben genannte Adresse.</p>
+          </div>
+
+          <div class="privacy-stand">
+            Stand: September 2026
+          </div>
+        </div>
+
+        <div class="modal-footer privacy-modal-footer">
+          <button id="btn-close-privacy" class="btn-confirm-privacy" type="button">Schließen</button>
         </div>
       </div>
     </div>
