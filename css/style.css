@@ -2229,7 +2229,7 @@ body.is-dragging-timetable .stage-headers-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 10px 0 14px;
 }
 
 .privacy-card-highlight {
@@ -2275,9 +2275,9 @@ body.is-dragging-timetable .stage-headers-list {
 }
 
 .privacy-modal-footer {
-  padding: 14px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: var(--bg-surface);
+  padding: 8px 0 0;
+  background: transparent;
+  border-top: none;
 }
 
 .btn-confirm-privacy {
