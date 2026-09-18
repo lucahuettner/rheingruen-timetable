@@ -66,6 +66,9 @@ class RheingruenApp {
     // Check first-visit disclaimer
     this.checkDisclaimer();
 
+    // Check In-App Browser Notice
+    this.initInAppBrowserNotice();
+
     // Register Service Worker for PWA
     this.initServiceWorker();
     this.initPWAInstallPrompt();
@@ -1485,6 +1488,179 @@ class RheingruenApp {
         document.body.style.overflow = "";
       }
     }
+  }
+
+  // --------------------------------------------------------------------------
+  // In-App Browser Notice (Instagram, TikTok, WhatsApp, Facebook, etc.)
+  // --------------------------------------------------------------------------
+  initInAppBrowserNotice() {
+    const banner = document.getElementById("iab-banner");
+    if (!banner) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const iabParam = urlParams.get("iab");
+
+    if (iabParam === "0" || iabParam === "false") {
+      return;
+    }
+
+    if (!iabParam) {
+      try {
+        if (sessionStorage.getItem("rg_iab_dismissed") === "true") {
+          return;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    const detection = this.detectInAppBrowser(iabParam);
+    if (!detection || !detection.isInApp) {
+      return;
+    }
+
+    const badge = document.getElementById("iab-badge");
+    const dots = document.getElementById("iab-dots-indicator");
+    const title = document.getElementById("iab-title");
+    const instructions = document.getElementById("iab-instructions");
+    const btnIntent = document.getElementById("btn-iab-intent");
+    const btnCopy = document.getElementById("btn-iab-copy");
+    const btnCopyText = document.getElementById("btn-iab-copy-text");
+    const btnDismiss = document.getElementById("btn-iab-dismiss");
+
+    if (badge) {
+      badge.textContent = detection.app ? `${detection.app.toUpperCase()} BROWSER` : "IN-APP BROWSER";
+    }
+
+    if (detection.platform === "ios") {
+      if (dots) dots.textContent = "•••";
+      if (title) title.textContent = "Tipp: Im Safari-Browser öffnen";
+      if (instructions) {
+        instructions.innerHTML = `1. Tippe oben rechts auf <strong>•••</strong> (oder unten auf <strong>[↑] Teilen</strong>)<br>2. Wähle <strong>»In Safari öffnen«</strong>`;
+      }
+      if (btnIntent) btnIntent.classList.add("hidden");
+    } else if (detection.platform === "android") {
+      if (dots) dots.textContent = "⋮";
+      if (title) title.textContent = "Tipp: Im Chrome-Browser öffnen";
+      if (instructions) {
+        instructions.innerHTML = `1. Tippe oben rechts auf <strong>⋮</strong> (Drei Punkte)<br>2. Wähle <strong>»Im Browser öffnen«</strong> (oder »In Chrome öffnen«)`;
+      }
+      if (btnIntent) {
+        btnIntent.classList.remove("hidden");
+        const cleanHost = window.location.host;
+        const cleanPath = window.location.pathname;
+        const cleanSearch = window.location.search;
+        btnIntent.href = `intent://${cleanHost}${cleanPath}${cleanSearch}#Intent;scheme=https;package=com.android.chrome;end`;
+      }
+    } else {
+      if (dots) dots.textContent = "••• / ⋮";
+      if (title) title.textContent = "Im Standard-Browser öffnen";
+      if (instructions) {
+        instructions.innerHTML = `Tippe auf das Menü (<strong>•••</strong> oder <strong>⋮</strong>) und wähle <strong>»Im Browser öffnen«</strong>.`;
+      }
+      if (btnIntent) btnIntent.classList.add("hidden");
+    }
+
+    if (btnDismiss) {
+      btnDismiss.addEventListener("click", () => {
+        banner.classList.add("hidden");
+        try {
+          sessionStorage.setItem("rg_iab_dismissed", "true");
+        } catch (e) {
+          // ignore
+        }
+      });
+    }
+
+    if (btnCopy) {
+      btnCopy.addEventListener("click", async () => {
+        const cleanUrl = window.location.origin + window.location.pathname;
+        try {
+          await navigator.clipboard.writeText(cleanUrl);
+          if (btnCopyText) btnCopyText.textContent = "Link kopiert! ✓";
+          btnCopy.classList.add("copied");
+          setTimeout(() => {
+            if (btnCopyText) btnCopyText.textContent = "Link kopieren";
+            btnCopy.classList.remove("copied");
+          }, 3000);
+        } catch (err) {
+          const input = document.createElement("input");
+          input.value = cleanUrl;
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand("copy");
+          document.body.removeChild(input);
+          if (btnCopyText) btnCopyText.textContent = "Link kopiert! ✓";
+          btnCopy.classList.add("copied");
+          setTimeout(() => {
+            if (btnCopyText) btnCopyText.textContent = "Link kopieren";
+            btnCopy.classList.remove("copied");
+          }, 3000);
+        }
+      });
+    }
+
+    banner.classList.remove("hidden");
+  }
+
+  detectInAppBrowser(overrideParam = null) {
+    if (overrideParam === "ios") {
+      return { isInApp: true, platform: "ios", app: "Instagram" };
+    }
+    if (overrideParam === "android") {
+      return { isInApp: true, platform: "android", app: "Instagram" };
+    }
+    if (overrideParam === "other") {
+      return { isInApp: true, platform: "other", app: "In-App" };
+    }
+
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || 
+                         window.navigator.standalone === true;
+    if (isStandalone) return null;
+
+    const ua = navigator.userAgent || navigator.vendor || window.opera || "";
+
+    const isIOS = /iPhone|iPad|iPod/i.test(ua) || 
+                  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/i.test(ua);
+
+    const isInstagram = /Instagram/i.test(ua);
+    const isFacebook = /FBAN|FBAV|FB_IAB/i.test(ua);
+    const isTikTok = /musical_ly|ByteLocale|ByteDance|TikTok/i.test(ua);
+    const isTwitter = /Twitter/i.test(ua);
+    const isLinkedIn = /LinkedInApp/i.test(ua);
+    const isSnapchat = /Snapchat/i.test(ua);
+    const isWhatsApp = /WhatsApp/i.test(ua);
+    const isTelegram = /Telegram/i.test(ua);
+    const isLine = /Line\//i.test(ua);
+    const isPinterest = /Pinterest/i.test(ua);
+
+    const isAndroidWebView = isAndroid && (/; wv\b/i.test(ua) || /Version\/[\d.]+.*Chrome/i.test(ua));
+    const isAlternativeIOSBrowser = /CriOS|FxiOS|EdgiOS|OPiOS/i.test(ua);
+    const isStandardIOSSafari = /Version\/[\d.]+.*Safari/i.test(ua) && 
+      !isInstagram && !isFacebook && !isTikTok && !isTwitter && 
+      !isLinkedIn && !isSnapchat && !isWhatsApp && !isTelegram && !isLine && !isPinterest;
+    const isIOSWebView = isIOS && !isAlternativeIOSBrowser && !isStandardIOSSafari;
+
+    const isInApp = isInstagram || isFacebook || isTikTok || isTwitter || 
+                    isLinkedIn || isSnapchat || isWhatsApp || isTelegram || 
+                    isLine || isPinterest || isAndroidWebView || isIOSWebView;
+
+    if (!isInApp) return null;
+
+    const appName = isInstagram ? "Instagram" :
+                    isFacebook ? "Facebook" :
+                    isTikTok ? "TikTok" :
+                    isTwitter ? "X" :
+                    isWhatsApp ? "WhatsApp" :
+                    isTelegram ? "Telegram" :
+                    isSnapchat ? "Snapchat" : "In-App";
+
+    return {
+      isInApp: true,
+      platform: isIOS ? "ios" : (isAndroid ? "android" : "other"),
+      app: appName
+    };
   }
 
   // --------------------------------------------------------------------------

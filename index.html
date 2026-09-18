@@ -508,6 +508,54 @@
       </div>
       <button id="ios-toast-close" class="ios-toast-close" onclick="document.getElementById('ios-install-toast')?.classList.add('hidden'); try{localStorage.setItem('rg_ios_prompt_dismissed','true')}catch(e){}" aria-label="Schließen">✕</button>
     </div>
+
+    <!-- In-App Browser Notice Banner -->
+    <aside id="iab-banner" class="iab-banner hidden" role="dialog" aria-modal="false" aria-labelledby="iab-title">
+      <div class="iab-pointer-indicator" aria-hidden="true">
+        <span class="iab-pointer-text">Tippe oben auf</span>
+        <span class="iab-dots-icon" id="iab-dots-indicator">•••</span>
+        <svg class="iab-arrow-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M7 17L17 7M17 7H7M17 7V17" />
+        </svg>
+      </div>
+
+      <div class="iab-content">
+        <div class="iab-header">
+          <span class="iab-badge" id="iab-badge">IN-APP BROWSER</span>
+          <h3 class="iab-title" id="iab-title">Im normalen Browser öffnen</h3>
+        </div>
+
+        <p class="iab-instructions" id="iab-instructions">
+          1. Tippe oben rechts auf <strong>•••</strong> (oder unten auf <strong>[↑] Teilen</strong>)<br>
+          2. Wähle <strong>»In Safari öffnen«</strong>
+        </p>
+
+        <p class="iab-reason">
+          ⚡ <em>Damit der Timetable auf dem Festival 100 % offline funktioniert und du ihn als App zum Home-Bildschirm hinzufügen kannst.</em>
+        </p>
+
+        <div class="iab-actions">
+          <a id="btn-iab-intent" class="btn-iab-intent hidden" href="#" rel="noopener">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <span>In Chrome öffnen ↗</span>
+          </a>
+          <button id="btn-iab-copy" class="btn-iab-copy" type="button">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="btn-iab-copy-text">Link kopieren</span>
+          </button>
+          <button id="btn-iab-dismiss" class="btn-iab-dismiss" type="button">
+            Hier bleiben
+          </button>
+        </div>
+      </div>
+    </aside>
   </div>
 
   <script type="module" src="js/app.js"></script>
