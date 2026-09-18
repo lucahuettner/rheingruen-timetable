@@ -186,7 +186,7 @@ html, body {
 
 .brand-title {
   font-size: 1.15rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 1.5px;
   background: linear-gradient(135deg, #FFFFFF 20%, var(--neon-green) 100%);
   -webkit-background-clip: text;
@@ -1500,7 +1500,7 @@ html, body {
 
 .modal-artist {
   font-size: 1.35rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.3px;
   margin-bottom: 6px;
   line-height: 1.2;
@@ -2037,7 +2037,7 @@ body.is-dragging-timetable .stage-headers-list {
 
 .disclaimer-textlogo-main {
   font-size: 1.6rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 2px;
   line-height: 1.1;
   color: #FFFFFF;
