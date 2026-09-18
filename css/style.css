@@ -1286,7 +1286,7 @@ html, body {
   gap: 8px;
   max-width: 680px;
   margin: 0 auto;
-  padding-bottom: 24px;
+  padding-bottom: 12px;
 }
 
 .list-item-card {
@@ -2331,12 +2331,12 @@ body.is-dragging-timetable .stage-headers-list {
    -------------------------------------------------------------------------- */
 .timetable-main-footer {
   width: 100%;
-  padding: 24px 16px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  padding: 10px 12px calc(env(safe-area-inset-bottom, 0px) + 10px);
   display: flex;
   justify-content: center;
   align-items: center;
   background: var(--bg-black);
-  border-top: 1px solid var(--border-subtle);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   flex-shrink: 0;
   z-index: 10;
 }
@@ -2346,12 +2346,31 @@ body.is-dragging-timetable .stage-headers-list {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 2px;
+}
+
+.timetable-main-footer .btn-mini-textlink {
+  font-size: 0.70rem;
+  padding: 2px 4px;
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+.timetable-main-footer .btn-mini-textlink:hover,
+.timetable-main-footer .btn-mini-textlink:active {
+  opacity: 1;
+  color: var(--neon-green);
+}
+
+.timetable-main-footer .mini-links-sep {
+  font-size: 0.65rem;
+  opacity: 0.35;
+  padding: 0 2px;
 }
 
 .empty-state-footer {
-  margin-top: 28px;
+  margin-top: 16px;
   background: transparent;
   border-top: none;
-  padding: 12px 16px 0;
+  padding: 8px 12px 0;
 }
