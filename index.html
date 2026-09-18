@@ -197,9 +197,11 @@
           <!-- Main Page Timetable Footer (Grid View) -->
           <footer class="timetable-main-footer">
             <div class="timetable-footer-inner">
-              <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
+              <button class="btn-mini-textlink btn-footer-disclaimer" type="button">Disclaimer</button>
               <span class="mini-links-sep">·</span>
               <button class="btn-mini-textlink btn-footer-privacy" type="button">Datenschutzerklärung</button>
+              <span class="mini-links-sep">·</span>
+              <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
             </div>
           </footer>
         </div>
@@ -214,9 +216,11 @@
         <!-- Main Page Timetable Footer (List View) -->
         <footer class="timetable-main-footer">
           <div class="timetable-footer-inner">
-            <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
+            <button class="btn-mini-textlink btn-footer-disclaimer" type="button">Disclaimer</button>
             <span class="mini-links-sep">·</span>
             <button class="btn-mini-textlink btn-footer-privacy" type="button">Datenschutzerklärung</button>
+            <span class="mini-links-sep">·</span>
+            <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
           </div>
         </footer>
       </div>
@@ -235,9 +239,11 @@
         <!-- Main Page Timetable Footer (Empty State) -->
         <footer class="timetable-main-footer empty-state-footer">
           <div class="timetable-footer-inner">
-            <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
+            <button class="btn-mini-textlink btn-footer-disclaimer" type="button">Disclaimer</button>
             <span class="mini-links-sep">·</span>
             <button class="btn-mini-textlink btn-footer-privacy" type="button">Datenschutzerklärung</button>
+            <span class="mini-links-sep">·</span>
+            <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
           </div>
         </footer>
       </div>
@@ -359,9 +365,11 @@
             Instagram (@rheingruen_festival) ↗
           </a>
           <div class="info-mini-links">
-            <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
+            <button id="btn-info-disclaimer" class="btn-mini-textlink" type="button">Disclaimer</button>
             <span class="mini-links-sep">·</span>
             <button id="btn-info-privacy" class="btn-mini-textlink" type="button">Datenschutzerklärung</button>
+            <span class="mini-links-sep">·</span>
+            <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
           </div>
         </div>
       </div>
@@ -371,6 +379,7 @@
     <div id="disclaimer-modal" class="disclaimer-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="disclaimer-title">
       <div class="disclaimer-backdrop"></div>
       <div class="disclaimer-card">
+        <button class="modal-close-btn" id="disclaimer-close-btn" aria-label="Schließen">✕</button>
         <div class="disclaimer-textlogo">
           <span class="disclaimer-textlogo-main">RHEINGRÜN</span>
           <span class="disclaimer-textlogo-sub">OPEN AIR</span>

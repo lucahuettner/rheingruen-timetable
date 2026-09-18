@@ -181,7 +181,10 @@ class RheingruenApp {
 
     // First-Visit Disclaimer
     this.disclaimerModal = document.getElementById("disclaimer-modal");
+    this.disclaimerBackdrop = document.querySelector("#disclaimer-modal .disclaimer-backdrop");
+    this.disclaimerCloseBtn = document.getElementById("disclaimer-close-btn");
     this.btnDismissDisclaimer = document.getElementById("btn-dismiss-disclaimer");
+    this.btnInfoDisclaimer = document.getElementById("btn-info-disclaimer");
 
     // Day & Event Navigation (Single Unified Bar)
     this.eventPillsNav = document.getElementById("event-pills-nav");
@@ -428,9 +431,24 @@ class RheingruenApp {
       this.infoModalBackdrop.addEventListener("click", () => this.closeInfoModal());
     }
 
-    // First-Visit Disclaimer Button
+    // Disclaimer Modal Handlers
     if (this.btnDismissDisclaimer) {
       this.btnDismissDisclaimer.addEventListener("click", () => this.dismissDisclaimer());
+    }
+    if (this.disclaimerCloseBtn) {
+      this.disclaimerCloseBtn.addEventListener("click", () => this.dismissDisclaimer());
+    }
+    if (this.disclaimerBackdrop) {
+      this.disclaimerBackdrop.addEventListener("click", () => this.dismissDisclaimer());
+    }
+    document.querySelectorAll(".btn-footer-disclaimer").forEach((btn) => {
+      btn.addEventListener("click", () => this.openDisclaimerModal());
+    });
+    if (this.btnInfoDisclaimer) {
+      this.btnInfoDisclaimer.addEventListener("click", () => {
+        this.closeInfoModal();
+        this.openDisclaimerModal();
+      });
     }
 
     // Privacy Policy Modal Handlers
@@ -472,6 +490,10 @@ class RheingruenApp {
       if (e.key === "Escape") {
         if (this.privacyModal && !this.privacyModal.classList.contains("hidden")) {
           this.closePrivacyModal();
+          return;
+        }
+        if (this.disclaimerModal && !this.disclaimerModal.classList.contains("hidden")) {
+          this.dismissDisclaimer();
           return;
         }
         this.closeModal();
@@ -1419,6 +1441,13 @@ class RheingruenApp {
     }
   }
 
+  openDisclaimerModal() {
+    if (this.disclaimerModal) {
+      this.disclaimerModal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+  }
+
   dismissDisclaimer() {
     try {
       localStorage.setItem("rg_disclaimer_dismissed", "true");
@@ -1427,7 +1456,12 @@ class RheingruenApp {
     }
     if (this.disclaimerModal) {
       this.disclaimerModal.classList.add("hidden");
-      document.body.style.overflow = "";
+      const isPrivacyOpen = this.privacyModal && !this.privacyModal.classList.contains("hidden");
+      const isInfoOpen = this.infoModal && !this.infoModal.classList.contains("hidden");
+      const isActOpen = this.actModal && !this.actModal.classList.contains("hidden");
+      if (!isPrivacyOpen && !isInfoOpen && !isActOpen) {
+        document.body.style.overflow = "";
+      }
     }
   }
 
