@@ -1743,10 +1743,10 @@ class RheingruenApp {
         window.location.reload();
       }
 
-      // Safety fallback in case controllerchange does not fire within 800ms
+      // Safety fallback in case controllerchange does not fire within 3000ms
       setTimeout(() => {
         window.location.reload();
-      }, 800);
+      }, 3000);
     };
 
     if (this.btnPwaReload) {
