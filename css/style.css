@@ -2167,19 +2167,6 @@ body.is-dragging-timetable .stage-headers-list {
 /* --------------------------------------------------------------------------
    MINI PRIVACY & AUTHOR TEXTLINKS & PRIVACY MODAL
    -------------------------------------------------------------------------- */
-.disclaimer-author-link {
-  color: var(--neon-green);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  transition: opacity 0.2s ease;
-}
-
-.disclaimer-author-link:hover,
-.disclaimer-author-link:active {
-  opacity: 0.8;
-}
-
 .disclaimer-mini-links,
 .info-mini-links {
   display: flex;
