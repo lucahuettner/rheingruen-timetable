@@ -1045,30 +1045,10 @@ html, body {
   transform: translateY(-0.5px);
 }
 
-.act-live-tag {
-  display: inline-block;
-  color: var(--neon-green);
-  background: color-mix(in srgb, var(--neon-green) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--neon-green) 35%, transparent);
-  font-size: 0.7em;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  padding: 1px 5px;
-  border-radius: var(--radius-sm);
-  margin-left: 4px;
-  vertical-align: middle;
-}
-
 .modal-artist .act-separator {
   font-size: 0.7em;
   padding: 0 5px;
   color: var(--text-muted);
-}
-
-.modal-artist .act-live-tag {
-  font-size: 0.6em;
-  padding: 2px 6px;
-  margin-left: 6px;
 }
 
 /* Card Footer */

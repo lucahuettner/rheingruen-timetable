@@ -515,7 +515,6 @@ class TimetableApp {
 
     let formatted = escaped.replace(/\b(B2B|F2F|b2b|f2f)\b/g, '<span class="act-separator">$1</span>');
     formatted = formatted.replace(/\s+&amp;\s+/g, ' <span class="act-separator">&amp;</span> ');
-    formatted = formatted.replace(/(\((?:LIVE|Live)\))/g, '<span class="act-live-tag">$1</span>');
     return formatted;
   }
 
