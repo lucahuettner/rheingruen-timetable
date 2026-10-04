@@ -34,8 +34,8 @@
       <div class="header-main">
         <div class="brand">
           <div class="brand-text">
-            <h1 class="brand-title">RHEINGRÜN</h1>
-            <span class="brand-subtitle">OPEN AIR · 19.–20. SEP</span>
+            <h1 class="brand-title" id="brand-title">TIMETABLE</h1>
+            <span class="brand-subtitle" id="brand-subtitle">FESTIVAL</span>
           </div>
         </div>
 
@@ -68,37 +68,8 @@
         </div>
       </div>
 
-      <!-- Unified Event & Day Switcher (Single Full-Sized Row) -->
-      <nav class="event-pills-nav" id="event-pills-nav" aria-label="Event- und Tagesauswahl">
-        <button class="event-pill" data-day="friday_pre" id="tab-friday-pre">
-          <span class="pill-badge">FR</span>
-          <div class="pill-meta">
-            <span class="pill-title">Pre-Party</span>
-            <span class="pill-sub">Gotec</span>
-          </div>
-        </button>
-        <button class="event-pill active" data-day="saturday" id="tab-saturday">
-          <span class="pill-badge">SA</span>
-          <div class="pill-meta">
-            <span class="pill-title">Festival</span>
-            <span class="pill-sub">19. SEP</span>
-          </div>
-        </button>
-        <button class="event-pill" data-day="saturday_after" id="tab-saturday-after">
-          <span class="pill-badge">SA</span>
-          <div class="pill-meta">
-            <span class="pill-title">Aftershow</span>
-            <span class="pill-sub">Gotec &amp; Elfino</span>
-          </div>
-        </button>
-        <button class="event-pill" data-day="sunday" id="tab-sunday">
-          <span class="pill-badge">SO</span>
-          <div class="pill-meta">
-            <span class="pill-title">Festival</span>
-            <span class="pill-sub">20. SEP</span>
-          </div>
-        </button>
-      </nav>
+      <!-- Unified Event & Day Switcher (Rendered dynamically from EVENT_CONFIG.days) -->
+      <nav class="event-pills-nav" id="event-pills-nav" aria-label="Event- und Tagesauswahl"></nav>
 
       <!-- Compact Search & View Switcher Row -->
       <div class="sub-controls-row">
@@ -195,13 +166,7 @@
 
           <!-- Main Page Timetable Footer (Grid View) -->
           <footer class="timetable-main-footer">
-            <div class="timetable-footer-inner">
-              <button class="btn-mini-textlink btn-footer-disclaimer" type="button">Disclaimer</button>
-              <span class="mini-links-sep">·</span>
-              <button class="btn-mini-textlink btn-footer-privacy" type="button">Datenschutzerklärung</button>
-              <span class="mini-links-sep">·</span>
-              <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
-            </div>
+            <div class="timetable-footer-inner"></div>
           </footer>
         </div>
       </div>
@@ -214,13 +179,7 @@
 
         <!-- Main Page Timetable Footer (List View) -->
         <footer class="timetable-main-footer">
-          <div class="timetable-footer-inner">
-            <button class="btn-mini-textlink btn-footer-disclaimer" type="button">Disclaimer</button>
-            <span class="mini-links-sep">·</span>
-            <button class="btn-mini-textlink btn-footer-privacy" type="button">Datenschutzerklärung</button>
-            <span class="mini-links-sep">·</span>
-            <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
-          </div>
+          <div class="timetable-footer-inner"></div>
         </footer>
       </div>
 
@@ -237,13 +196,7 @@
 
         <!-- Main Page Timetable Footer (Empty State) -->
         <footer class="timetable-main-footer empty-state-footer">
-          <div class="timetable-footer-inner">
-            <button class="btn-mini-textlink btn-footer-disclaimer" type="button">Disclaimer</button>
-            <span class="mini-links-sep">·</span>
-            <button class="btn-mini-textlink btn-footer-privacy" type="button">Datenschutzerklärung</button>
-            <span class="mini-links-sep">·</span>
-            <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
-          </div>
+          <div class="timetable-footer-inner"></div>
         </footer>
       </div>
     </main>
@@ -297,57 +250,29 @@
       <div class="disclaimer-card">
         <button class="modal-close-btn" id="disclaimer-close-btn" aria-label="Schließen">✕</button>
         <div class="disclaimer-textlogo">
-          <span class="disclaimer-textlogo-main">RHEINGRÜN</span>
-          <span class="disclaimer-textlogo-sub">OPEN AIR</span>
+          <span class="disclaimer-textlogo-main" id="disclaimer-logo-main">TIMETABLE</span>
+          <span class="disclaimer-textlogo-sub" id="disclaimer-logo-sub">OPEN AIR</span>
         </div>
 
-        <div class="disclaimer-badge">INOFFIZIELLER FAN-TIMETABLE</div>
+        <div class="disclaimer-badge" id="disclaimer-badge">INOFFIZIELLER FAN-TIMETABLE</div>
 
         <h2 id="disclaimer-title" class="disclaimer-title">Wichtiger Hinweis</h2>
 
         <div class="disclaimer-content">
-          <p class="disclaimer-intro">
-            Diese Web-App ist ein <strong>privates, inoffizielles Projekt</strong> für Freunde und Besucher, um den Zeitplan auf dem Festivalgelände schnell und 100 % offline nutzen zu können.
-          </p>
-          <p class="disclaimer-sub">
-            Dies ist <em>keine</em> offizielle Seite des Festival-Veranstalters. Für alle verbindlichen Infos, offizielle Updates, Timetable-Änderungen und Lagepläne besuche bitte die offiziellen Kanäle:
-          </p>
+          <p class="disclaimer-intro" id="disclaimer-intro"></p>
+          <p class="disclaimer-sub" id="disclaimer-sub"></p>
 
-          <div class="disclaimer-buttons-group">
-            <a href="https://rheingruen-openair.de/" target="_blank" rel="noopener" class="disclaimer-btn-link">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-              </svg>
-              <span>Offizielle Festival-Website</span>
-              <span class="btn-arrow">↗</span>
-            </a>
-
-            <a href="https://www.instagram.com/rheingruen_festival/" target="_blank" rel="noopener" class="disclaimer-btn-link btn-instagram">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-              </svg>
-              <span>Instagram (@rheingruen_festival)</span>
-              <span class="btn-arrow">↗</span>
-            </a>
-          </div>
+          <div class="disclaimer-buttons-group" id="disclaimer-links-group"></div>
         </div>
 
         <div class="disclaimer-action">
           <button id="btn-dismiss-disclaimer" class="btn-confirm-disclaimer">
-            <span>Verstanden & weiter zum Zeitplan</span>
+            <span id="disclaimer-confirm-text">Verstanden & weiter zum Zeitplan</span>
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
           </button>
-          <div class="disclaimer-mini-links">
-            <a href="https://www.instagram.com/da_lucaaa" target="_blank" rel="noopener" class="btn-mini-textlink">Gebaut von @da_lucaaa ↗</a>
-            <span class="mini-links-sep">·</span>
-            <button id="btn-open-privacy" class="btn-mini-textlink" type="button">Datenschutzerklärung</button>
-          </div>
+          <div class="disclaimer-mini-links" id="disclaimer-mini-links"></div>
         </div>
       </div>
     </div>
@@ -360,10 +285,10 @@
         <button class="modal-close-btn" id="privacy-modal-close-btn" aria-label="Schließen">✕</button>
 
         <div class="modal-header">
-          <div class="modal-stage-badge" style="background:rgba(0, 255, 135, 0.15);color:var(--neon-green);">DATENSCHUTZ</div>
+          <div class="modal-stage-badge" style="background:color-mix(in srgb, var(--neon-green) 15%, transparent);color:var(--neon-green);">DATENSCHUTZ</div>
           <h2 class="modal-artist" id="privacy-modal-title">Datenschutzerklärung</h2>
-          <div class="privacy-modal-contact">
-            <span class="privacy-contact-label">Verantwortlicher:</span> Luca Hüttner, <a href="mailto:timetable@huettner.dev" class="privacy-mail-link">timetable@huettner.dev</a>
+          <div class="privacy-modal-contact" id="privacy-contact-row">
+            <span class="privacy-contact-label">Verantwortlicher:</span> <span id="privacy-contact-name"></span>, <a href="#" id="privacy-contact-email" class="privacy-mail-link"></a>
           </div>
         </div>
 
@@ -374,7 +299,7 @@
 
           <div class="privacy-card">
             <h3 class="privacy-card-title">Hosting</h3>
-            <p>Die Seite wird über GitHub Pages (GitHub Inc., San Francisco, USA – Microsoft-Gruppe) ausgeliefert. Beim Aufruf fallen dort technisch notwendige Server-Logdaten an (u. a. IP-Adresse, Zeitpunkt, aufgerufene Datei, Browsertyp). Auf diese Daten haben wir keinen Zugriff. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO, berechtigtes Interesse an einer sicheren Bereitstellung. GitHub ist unter dem EU-US Data Privacy Framework zertifiziert.</p>
+            <p>Die Seite wird über <span id="privacy-hosting-provider">GitHub Pages</span> ausgeliefert. Beim Aufruf fallen dort technisch notwendige Server-Logdaten an (u. a. IP-Adresse, Zeitpunkt, aufgerufene Datei, Browsertyp). Auf diese Daten haben wir keinen Zugriff. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO, berechtigtes Interesse an einer sicheren Bereitstellung.</p>
           </div>
 
           <div class="privacy-card">
@@ -384,12 +309,10 @@
 
           <div class="privacy-card">
             <h3 class="privacy-card-title">Deine Rechte</h3>
-            <p>Dir stehen die Rechte aus Art. 15–21 DSGVO zu (Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch) sowie ein Beschwerderecht bei einer Aufsichtsbehörde – für Baden-Württemberg beim LfDI (<a href="https://www.baden-wuerttemberg.datenschutz.de/" target="_blank" rel="noopener" class="privacy-ext-link">lfdi.baden-wuerttemberg.de</a>). Anfragen an die oben genannte Adresse.</p>
+            <p>Dir stehen die Rechte aus Art. 15–21 DSGVO zu (Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch) sowie ein Beschwerderecht bei einer Aufsichtsbehörde (<span id="privacy-authority-name">LfDI</span>: <a href="#" id="privacy-authority-link" target="_blank" rel="noopener" class="privacy-ext-link"></a>). Anfragen an die oben genannte Adresse.</p>
           </div>
 
-          <div class="privacy-stand">
-            Stand: September 2026
-          </div>
+          <div class="privacy-stand" id="privacy-stand"></div>
         </div>
 
         <div class="modal-footer privacy-modal-footer">

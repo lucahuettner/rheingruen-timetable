@@ -1,9 +1,9 @@
 /**
- * Rheingrün Festival - Service Worker for Offline PWA Support
+ * Event Timetable PWA - Service Worker for Offline Support
  * Cache-First Strategy with Network Fallback
  */
 
-const CACHE_NAME = "rheingruen-timetable-v37";
+const CACHE_NAME = "timetable-pwa-v38";
 
 const PRECACHE_ASSETS = [
   "./",

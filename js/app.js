@@ -1,32 +1,36 @@
 /**
- * Rheingrün Festival 2026 - Main Application Logic
- * PWA, Responsive Timetable, Real-time Now-Line, Time Simulator & Favorites
+ * Configurable Event Timetable PWA - Main Application Logic
+ * Responsive Multi-Stage Grid, Real-Time Now-Line, Offline Support & Favorites
  */
 
-import { FESTIVAL_CONFIG, SCHEDULE_DATA } from "./schedule-data.js";
+import { EVENT_CONFIG, SCHEDULE_DATA } from "./schedule-data.js";
 
-class RheingruenApp {
+class TimetableApp {
   constructor() {
-    this.config = FESTIVAL_CONFIG;
+    this.config = EVENT_CONFIG;
     this.data = SCHEDULE_DATA;
 
-    // Fast O(1) Act Lookup Map
+    this.pxPerMinute = this.config.theme?.pxPerMinute || 2;
+    this.favColor = this.config.theme?.favoriteColor || "#FF4B6E";
+
+    const eventId = this.config.id || "event-timetable";
+    this.storageKeys = {
+      favorites: `${eventId}_favorites`,
+      disclaimer: `${eventId}_disclaimer_dismissed`,
+      iosPrompt: `${eventId}_ios_prompt_dismissed`,
+      iab: `${eventId}_iab_dismissed`
+    };
+
+    // Normalize days & schedule acts (auto-generate IDs, stage names & overnight flags)
     this.actsById = new Map();
-    Object.entries(this.data).forEach(([dayId, stages]) => {
-      Object.values(stages).forEach((acts) => {
-        acts.forEach((act) => {
-          if (!act.day) act.day = dayId;
-          this.actsById.set(act.id, act);
-        });
-      });
-    });
+    this.normalizeConfigAndData();
 
     // Application State
     this.currentDay = this.detectInitialDay();
-    this.viewMode = "grid";   // "grid" | "list"
+    this.viewMode = "grid"; // "grid" | "list"
     this.searchQuery = "";
     this.onlyFavorites = false;
-    
+
     // Favorites (persisted in localStorage)
     this.favorites = this.loadFavorites();
 
@@ -35,6 +39,12 @@ class RheingruenApp {
 
     // Cache DOM Elements
     this.initDOMElements();
+
+    // Apply Theme, Branding, Disclaimer, Privacy & Footer from EVENT_CONFIG
+    this.applyThemeAndBranding();
+
+    // Render Navigation Pills dynamically from EVENT_CONFIG.days
+    this.renderEventPills();
 
     // Setup Event Listeners
     this.initEventListeners();
@@ -47,7 +57,7 @@ class RheingruenApp {
     this.render();
     this.updateLiveIndicator();
 
-    // Auto-scroll to current live/simulated time on initial load
+    // Auto-scroll to current live time on initial load
     setTimeout(() => {
       this.jumpToNow(true, true);
     }, 150);
@@ -59,7 +69,7 @@ class RheingruenApp {
       this.updateLiveCards();
     }, 10000);
 
-    // Check first-visit disclaimer
+    // Check first-visit disclaimer (if enabled in config)
     this.checkDisclaimer();
 
     // Check In-App Browser Notice
@@ -68,6 +78,240 @@ class RheingruenApp {
     // Register Service Worker for PWA
     this.initServiceWorker();
     this.initPWAInstallPrompt();
+  }
+
+  // --------------------------------------------------------------------------
+  // Config Normalization & Dynamic Branding
+  // --------------------------------------------------------------------------
+  normalizeConfigAndData() {
+    const defaultStages = this.config.stages || [];
+
+    (this.config.days || []).forEach((day) => {
+      if (typeof day.isOvernight !== "boolean") {
+        day.isOvernight = day.endHour <= day.startHour;
+      }
+      if (!day.stages || day.stages.length === 0) {
+        day.stages = defaultStages;
+      }
+      if (!day.label) {
+        day.label = [day.badge, day.title, day.subtitle].filter(Boolean).join(" · ");
+      }
+    });
+
+    Object.entries(this.data || {}).forEach(([dayId, stages]) => {
+      const dayConf = (this.config.days || []).find((d) => d.id === dayId);
+      const dayStages = dayConf?.stages || defaultStages;
+
+      Object.entries(stages || {}).forEach(([stageId, acts]) => {
+        const stageObj =
+          dayStages.find((s) => s.id === stageId) ||
+          defaultStages.find((s) => s.id === stageId) ||
+          { id: stageId, name: stageId, color: this.config.theme?.accentColor || "#00FF87" };
+
+        (acts || []).forEach((act) => {
+          act.day = dayId;
+          act.stage = stageId;
+          act.stageName = act.stageName || stageObj.name;
+          if (!act.id) {
+            const slug = act.artist
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-|-$/g, "");
+            const startClean = act.start.replace(":", "");
+            act.id = `${dayId}-${stageId}-${startClean}-${slug}`;
+          }
+          this.actsById.set(act.id, act);
+        });
+      });
+    });
+  }
+
+  applyThemeAndBranding() {
+    const t = this.config.theme || {};
+    const root = document.documentElement;
+
+    if (t.accentColor) root.style.setProperty("--neon-green", t.accentColor);
+    if (t.secondaryColor) root.style.setProperty("--neon-cyan", t.secondaryColor);
+    if (t.favoriteColor) root.style.setProperty("--fav-color", t.favoriteColor);
+    if (t.bgDark) {
+      root.style.setProperty("--bg-dark", t.bgDark);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t.bgDark);
+    }
+    if (t.bgSurface) root.style.setProperty("--bg-surface", t.bgSurface);
+    if (t.bgSurfaceElevated) root.style.setProperty("--bg-surface-elevated", t.bgSurfaceElevated);
+    if (t.bgSurfaceCard) root.style.setProperty("--bg-surface-card", t.bgSurfaceCard);
+
+    // Branding & Meta
+    const b = this.config.branding || {};
+    if (b.pageTitle) {
+      document.title = b.pageTitle;
+      document.querySelector('meta[property="og:title"]')?.setAttribute("content", b.pageTitle);
+    }
+    if (b.description) {
+      document.querySelector('meta[name="description"]')?.setAttribute("content", b.description);
+      document.querySelector('meta[property="og:description"]')?.setAttribute("content", b.description);
+    }
+    if (b.shortName) {
+      document.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute("content", b.shortName);
+    }
+
+    const brandTitleEl = document.getElementById("brand-title");
+    const brandSubEl = document.getElementById("brand-subtitle");
+    if (brandTitleEl && b.title) brandTitleEl.textContent = b.title;
+    if (brandSubEl && b.subtitle) brandSubEl.textContent = b.subtitle;
+
+    // Disclaimer Modal Content
+    const d = this.config.disclaimer || {};
+    const l = this.config.legal || {};
+    const p = l.privacy || {};
+
+    if (d.enabled) {
+      const logoMain = document.getElementById("disclaimer-logo-main");
+      const logoSub = document.getElementById("disclaimer-logo-sub");
+      const badge = document.getElementById("disclaimer-badge");
+      const title = document.getElementById("disclaimer-title");
+      const intro = document.getElementById("disclaimer-intro");
+      const sub = document.getElementById("disclaimer-sub");
+      const confirmText = document.getElementById("disclaimer-confirm-text");
+      const linksGroup = document.getElementById("disclaimer-links-group");
+      const miniLinks = document.getElementById("disclaimer-mini-links");
+
+      if (logoMain) logoMain.textContent = b.title || "TIMETABLE";
+      if (logoSub) logoSub.textContent = b.typeLabel || b.subtitle || "";
+      if (badge) {
+        badge.textContent = d.badge || "";
+        badge.classList.toggle("hidden", !d.badge);
+      }
+      if (title && d.title) title.textContent = d.title;
+      if (intro) intro.innerHTML = d.introHtml || "";
+      if (sub) sub.innerHTML = d.subHtml || "";
+      if (confirmText && d.confirmLabel) confirmText.textContent = d.confirmLabel;
+
+      if (linksGroup) {
+        linksGroup.innerHTML = (d.links || [])
+          .map((link) => {
+            const isInsta = link.variant === "instagram" || link.icon === "instagram";
+            const iconSvg = this.getLinkIconSvg(link.icon);
+            return `
+              <a href="${link.url}" target="_blank" rel="noopener" class="disclaimer-btn ${isInsta ? "disclaimer-btn-insta" : ""}">
+                ${iconSvg}
+                <span>${link.label}</span>
+                <svg class="ext-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                </svg>
+              </a>
+            `;
+          })
+          .join("");
+      }
+
+      if (miniLinks) {
+        const miniItems = [];
+        if (l.creditsLabel && l.creditsUrl) {
+          miniItems.push(`<a href="${l.creditsUrl}" target="_blank" rel="noopener" class="disclaimer-credit-link">${l.creditsLabel}</a>`);
+        }
+        if (p.enabled) {
+          miniItems.push(`<button type="button" id="btn-open-privacy" class="disclaimer-privacy-btn">Datenschutz</button>`);
+        }
+        miniLinks.innerHTML = miniItems.join('<span class="disclaimer-mini-dot">·</span>');
+      }
+    }
+
+    // Privacy Policy Modal Content
+    if (p.enabled) {
+      const contactName = document.getElementById("privacy-contact-name");
+      const contactEmail = document.getElementById("privacy-contact-email");
+      const hostingProvider = document.getElementById("privacy-hosting-provider");
+      const authorityName = document.getElementById("privacy-authority-name");
+      const authorityLink = document.getElementById("privacy-authority-link");
+      const stand = document.getElementById("privacy-stand");
+
+      if (contactName) contactName.textContent = p.contactName || "";
+      if (contactEmail) {
+        contactEmail.textContent = p.contactEmail || "";
+        contactEmail.href = p.contactEmail ? `mailto:${p.contactEmail}` : "#";
+      }
+      if (hostingProvider) hostingProvider.textContent = p.hostingProvider || "";
+      if (authorityName) authorityName.textContent = p.supervisoryAuthorityName || "";
+      if (authorityLink) {
+        authorityLink.href = p.supervisoryAuthorityUrl || "#";
+        authorityLink.textContent = p.supervisoryAuthorityLabel || p.supervisoryAuthorityUrl || "";
+      }
+      if (stand) {
+        stand.textContent = p.updatedAt ? `Stand: ${p.updatedAt}` : "";
+      }
+    }
+
+    // Page Footers
+    const footerItems = [];
+    if (l.creditsLabel && l.creditsUrl) {
+      footerItems.push(`<a href="${l.creditsUrl}" target="_blank" rel="noopener" class="footer-credit-link">${l.creditsLabel}</a>`);
+    }
+    if (d.enabled) {
+      footerItems.push(`<button type="button" class="footer-text-btn btn-footer-disclaimer">Offizielle Links & Info</button>`);
+    }
+    if (p.enabled) {
+      footerItems.push(`<button type="button" class="footer-text-btn btn-footer-privacy">Datenschutz</button>`);
+    }
+
+    const footerHtml = footerItems.join('<span class="footer-dot">·</span>');
+    document.querySelectorAll(".timetable-footer-inner").forEach((container) => {
+      container.innerHTML = footerHtml;
+      const parentFooter = container.closest(".timetable-main-footer");
+      if (parentFooter) {
+        parentFooter.classList.toggle("hidden", footerItems.length === 0);
+      }
+    });
+  }
+
+  getLinkIconSvg(iconName) {
+    if (iconName === "instagram") {
+      return `
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+      `;
+    }
+    return `
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="2" y1="12" x2="22" y2="12"></line>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+      </svg>
+    `;
+  }
+
+  renderEventPills() {
+    if (!this.eventPillsNav) return;
+    this.eventPillsNav.innerHTML = "";
+    this.eventPillTabs = [];
+
+    const days = this.config.days || [];
+    if (days.length <= 1) {
+      this.eventPillsNav.classList.add("hidden");
+      return;
+    }
+
+    this.eventPillsNav.classList.remove("hidden");
+
+    days.forEach((day) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "event-pill";
+      btn.dataset.day = day.id;
+      btn.innerHTML = `
+        ${day.badge ? `<span class="pill-day-badge">${day.badge}</span>` : ""}
+        <div class="pill-text-col">
+          <span class="pill-main-title">${day.title}</span>
+          ${day.subtitle ? `<span class="pill-sub-venue">${day.subtitle}</span>` : ""}
+        </div>
+      `;
+      btn.addEventListener("click", () => this.setDay(day.id));
+      this.eventPillsNav.appendChild(btn);
+      this.eventPillTabs.push(btn);
+    });
   }
 
   // --------------------------------------------------------------------------
@@ -88,50 +332,66 @@ class RheingruenApp {
     return `${year}-${month}-${day}`;
   }
 
+  getDayWindowDates(day) {
+    if (!day.isoDate) return null;
+    const [y, m, d] = day.isoDate.split("-").map(Number);
+    if (!y || !m || !d) return null;
+    const start = new Date(y, m - 1, d, day.startHour, 0, 0, 0);
+    const endDayOffset = day.isOvernight ? 1 : 0;
+    const end = new Date(y, m - 1, d + endDayOffset, day.endHour, 0, 0, 0);
+    return { start, end };
+  }
+
   detectInitialDay() {
+    const days = this.config.days || [];
+    if (days.length === 0) return "";
+
     const urlParams = new URLSearchParams(window.location.search);
     const dayParam = urlParams.get("day");
-    const validDays = ["saturday", "sunday", "friday_pre", "saturday_after"];
-    if (validDays.includes(dayParam)) {
+    if (dayParam && days.some((d) => d.id === dayParam)) {
       return dayParam;
     }
 
-    // Auto-detect based on current real local date and time
     const now = new Date();
     const localIsoDate = this.getLocalDateIso(now);
-    const hour = now.getHours();
 
-    // 1. Friday (2026-09-18): Pre-Party @ Gotec (starts 22:00)
-    if (localIsoDate === this.config.dates.friday_pre) {
-      return "friday_pre";
-    }
+    // 1. Check if current time falls directly inside any day's active time window
+    // If multiple overlap (e.g. Festival ends 23:00, Aftershow starts 22:00), pick the one that started most recently
+    let activeMatch = null;
+    let activeLatestStart = -Infinity;
 
-    // 2. Saturday (2026-09-19):
-    if (localIsoDate === this.config.dates.saturday) {
-      // 00:00 - 06:00: Friday Pre-Party is still in full swing at Gotec!
-      if (hour < 6) {
-        return "friday_pre";
+    for (const day of days) {
+      const win = this.getDayWindowDates(day);
+      if (win && now >= win.start && now < win.end) {
+        if (win.start.getTime() >= activeLatestStart) {
+          activeLatestStart = win.start.getTime();
+          activeMatch = day.id;
+        }
       }
-      // 06:00 - 22:00: Main Saturday Open-Air Festival
-      if (hour < 22) {
-        return "saturday";
-      }
-      // 22:00 onwards: Saturday Official Aftershow @ Gotec & Elfino
-      return "saturday_after";
     }
+    if (activeMatch) return activeMatch;
 
-    // 3. Sunday (2026-09-20):
-    if (localIsoDate === this.config.dates.sunday) {
-      // 00:00 - 09:00: Saturday Aftershow is still ongoing at Gotec
-      if (hour < 9) {
-        return "saturday_after";
+    // 2. If not currently in an active window, check if there is an upcoming event today
+    let upcomingMatch = null;
+    let upcomingEarliestStart = Infinity;
+
+    for (const day of days) {
+      if (day.isoDate === localIsoDate) {
+        const win = this.getDayWindowDates(day);
+        if (win && now < win.end && win.start.getTime() < upcomingEarliestStart) {
+          upcomingEarliestStart = win.start.getTime();
+          upcomingMatch = day.id;
+        }
       }
-      // 09:00 onwards: Sunday Festival
-      return "sunday";
     }
+    if (upcomingMatch) return upcomingMatch;
 
-    // Default outside festival weekend: Saturday (main open-air festival day)
-    return "saturday";
+    // 3. Fallback if today matches any day's isoDate (e.g. late night after event ended)
+    const sameDateDay = days.find((d) => d.isoDate === localIsoDate);
+    if (sameDateDay) return sameDateDay.id;
+
+    // 4. Default outside event dates
+    return this.config.defaultDayId || days[0].id;
   }
 
   initDOMElements() {
@@ -147,13 +407,9 @@ class RheingruenApp {
     this.disclaimerCloseBtn = document.getElementById("disclaimer-close-btn");
     this.btnDismissDisclaimer = document.getElementById("btn-dismiss-disclaimer");
 
-    // Day & Event Navigation (Single Unified Bar)
+    // Day & Event Navigation
     this.eventPillsNav = document.getElementById("event-pills-nav");
-    this.tabFridayPre = document.getElementById("tab-friday-pre");
-    this.tabSaturday = document.getElementById("tab-saturday");
-    this.tabSaturdayAfter = document.getElementById("tab-saturday-after");
-    this.tabSunday = document.getElementById("tab-sunday");
-    this.eventPillTabs = [this.tabFridayPre, this.tabSaturday, this.tabSaturdayAfter, this.tabSunday].filter(Boolean);
+    this.eventPillTabs = [];
     this.btnViewGrid = document.getElementById("view-grid-btn");
     this.btnViewList = document.getElementById("view-list-btn");
 
@@ -219,7 +475,6 @@ class RheingruenApp {
     this.privacyModalBackdrop = document.getElementById("privacy-modal-backdrop");
     this.privacyModalCloseBtn = document.getElementById("privacy-modal-close-btn");
     this.btnClosePrivacy = document.getElementById("btn-close-privacy");
-    this.btnOpenPrivacy = document.getElementById("btn-open-privacy");
   }
 
   // --------------------------------------------------------------------------
@@ -266,7 +521,7 @@ class RheingruenApp {
     const dayConf = this.getCurrentDayConfig();
     const startMins = dayConf.startHour * 60;
     const offset = minutes - startMins;
-    return offset * this.config.pxPerMinute;
+    return offset * this.pxPerMinute;
   }
 
   // --------------------------------------------------------------------------
@@ -276,11 +531,11 @@ class RheingruenApp {
     const dayConf = this.getCurrentDayConfig();
     const isOvernight = Boolean(dayConf.isOvernight);
     const startMins = dayConf.startHour * 60;
-    const endMins = (isOvernight && dayConf.endHour < dayConf.startHour)
+    const endMins = (isOvernight && dayConf.endHour <= dayConf.startHour)
       ? (dayConf.endHour + 24) * 60
       : dayConf.endHour * 60;
     const totalMinutes = endMins - startMins;
-    const totalHeight = totalMinutes * this.config.pxPerMinute;
+    const totalHeight = totalMinutes * this.pxPerMinute;
 
     // Set height on timetable containers
     this.timeAxisColumn.style.height = `${totalHeight}px`;
@@ -294,7 +549,7 @@ class RheingruenApp {
     this.gridBackgroundLines.innerHTML = "";
 
     for (let m = startMins; m <= endMins; m += 30) {
-      const topPx = (m - startMins) * this.config.pxPerMinute;
+      const topPx = (m - startMins) * this.pxPerMinute;
       const isHour = m % 60 === 0;
       const timeStr = this.minutesToTime(m);
 
@@ -335,12 +590,6 @@ class RheingruenApp {
       }
       isSyncingBody = false;
     }, { passive: true });
-
-    // Day & Event Pills Navigation
-    if (this.tabFridayPre) this.tabFridayPre.addEventListener("click", () => this.setDay("friday_pre"));
-    if (this.tabSaturday) this.tabSaturday.addEventListener("click", () => this.setDay("saturday"));
-    if (this.tabSaturdayAfter) this.tabSaturdayAfter.addEventListener("click", () => this.setDay("saturday_after"));
-    if (this.tabSunday) this.tabSunday.addEventListener("click", () => this.setDay("sunday"));
 
     // View Switcher (Grid vs List)
     this.btnViewGrid.addEventListener("click", () => this.setViewMode("grid"));
@@ -395,8 +644,9 @@ class RheingruenApp {
     });
 
     // Privacy Policy Modal Handlers
-    if (this.btnOpenPrivacy) {
-      this.btnOpenPrivacy.addEventListener("click", () => this.openPrivacyModal());
+    const btnOpenPrivacy = document.getElementById("btn-open-privacy");
+    if (btnOpenPrivacy) {
+      btnOpenPrivacy.addEventListener("click", () => this.openPrivacyModal());
     }
     document.querySelectorAll(".btn-footer-privacy").forEach((btn) => {
       btn.addEventListener("click", () => this.openPrivacyModal());
@@ -617,66 +867,10 @@ class RheingruenApp {
   // --------------------------------------------------------------------------
   loadFavorites() {
     try {
-      const stored = localStorage.getItem("rg_favorites_2026");
+      const stored = localStorage.getItem(this.storageKeys.favorites);
       if (!stored) return new Set();
       const rawList = JSON.parse(stored);
-      if (!Array.isArray(rawList)) return new Set();
-
-      // Migration map for older slot-based IDs (sat-m-1 -> sat-saika etc.)
-      const LEGACY_ID_MAP = {
-        "sat-m-1": "sat-saika",
-        "sat-m-2": "sat-lola-cerise-gustav-organo",
-        "sat-m-3": "sat-dasstudach",
-        "sat-m-4": "sat-kander",
-        "sat-m-5": "sat-ush-slvl",
-        "sat-m-6": "sat-vieze-asbak",
-        "sat-m-7": "sat-natte-visstick-jowi",
-        "sat-f-1": "sat-dj-blush-lensch",
-        "sat-f-2": "sat-rot-ton-dj-sexstasy",
-        "sat-f-3": "sat-dj-hyperdrive-laure-croft",
-        "sat-f-4": "sat-elli-acula-mac-declos",
-        "sat-f-5": "sat-alarico-shdw",
-        "sat-f-6": "sat-future-666-fenim0re",
-        "sat-h-1": "sat-antigen-lilli-4love",
-        "sat-h-2": "sat-the-muffin-man-alycia-bezgo",
-        "sat-h-3": "sat-trancemaster-krause-bixbita",
-        "sat-h-4": "sat-davyboi-peterblue",
-        "sat-h-5": "sat-mika-heggemann-cleopard2000",
-        "sun-m-1": "sun-ponti",
-        "sun-m-2": "sun-kotorri",
-        "sun-m-3": "sun-schrotthagen",
-        "sun-m-4": "sun-nicolas-julian",
-        "sun-m-5": "sun-nikolina",
-        "sun-m-6": "sun-vendex",
-        "sun-m-7": "sun-jazzy",
-        "sun-m-8": "sun-surprise-closing",
-        "sun-f-1": "sun-dvaid-relajadita",
-        "sun-f-2": "sun-wilderich-zwilling",
-        "sun-f-3": "sun-l-zwo-antonym",
-        "sun-f-4": "sun-noise-mafia-fenrick",
-        "sun-f-5": "sun-cloudy-serafina",
-        "sun-f-6": "sun-adrian-mills-prada2000",
-        "sun-h-1": "sun-tamara-wirth",
-        "sun-h-2": "sun-dj-swisherman",
-        "sun-h-3": "sun-frederic-stef-de-haan",
-        "sun-h-4": "sun-aerea",
-        "sun-h-5": "sun-dax-j"
-      };
-
-      let migrated = false;
-      const cleanList = rawList.map(id => {
-        if (LEGACY_ID_MAP[id]) {
-          migrated = true;
-          return LEGACY_ID_MAP[id];
-        }
-        return id;
-      });
-
-      if (migrated) {
-        localStorage.setItem("rg_favorites_2026", JSON.stringify(cleanList));
-      }
-
-      return new Set(cleanList);
+      return Array.isArray(rawList) ? new Set(rawList) : new Set();
     } catch {
       return new Set();
     }
@@ -684,7 +878,7 @@ class RheingruenApp {
 
   saveFavorites() {
     try {
-      localStorage.setItem("rg_favorites_2026", JSON.stringify(Array.from(this.favorites)));
+      localStorage.setItem(this.storageKeys.favorites, JSON.stringify(Array.from(this.favorites)));
     } catch (e) {
       console.error("Failed to save favorites", e);
     }
@@ -727,7 +921,7 @@ class RheingruenApp {
         favBtn.classList.toggle("favorited", isFav);
         const svg = favBtn.querySelector("svg");
         if (svg) {
-          svg.setAttribute("fill", isFav ? "#FF4B6E" : "none");
+          svg.setAttribute("fill", isFav ? this.favColor : "none");
         }
       }
     });
@@ -740,7 +934,7 @@ class RheingruenApp {
         favBtn.classList.toggle("favorited", isFav);
         const svg = favBtn.querySelector("svg");
         if (svg) {
-          svg.setAttribute("fill", isFav ? "#FF4B6E" : "none");
+          svg.setAttribute("fill", isFav ? this.favColor : "none");
         }
       }
     });
@@ -828,7 +1022,10 @@ class RheingruenApp {
 
       // 1. Stage Header in Sticky Track
       const headerItem = document.createElement("div");
-      headerItem.className = `stage-header-item header-${stage.id}`;
+      headerItem.className = "stage-header-item";
+      if (stage.color) {
+        headerItem.style.setProperty("--stage-color", stage.color);
+      }
       headerItem.innerHTML = `
         <span class="stage-header-name">${stage.name}</span>
       `;
@@ -844,7 +1041,7 @@ class RheingruenApp {
         const durationMin = endMin - startMin;
 
         const topPx = this.getTimelineY(startMin);
-        const heightPx = Math.max(36, durationMin * this.config.pxPerMinute - 4); // 4px visual gap
+        const heightPx = Math.max(36, durationMin * this.pxPerMinute - 4); // 4px visual gap
 
         const isLive = this.isActLive(act);
         const isFav = this.favorites.has(act.id);
@@ -853,6 +1050,9 @@ class RheingruenApp {
         card.className = `act-card ${isLive ? "is-live" : ""} ${isFav ? "is-favorite" : ""}`;
         card.dataset.stage = stage.id;
         card.dataset.actId = act.id;
+        if (stage.color) {
+          card.style.setProperty("--stage-color", stage.color);
+        }
         card.style.top = `${topPx}px`;
         card.style.height = `${heightPx}px`;
 
@@ -863,7 +1063,7 @@ class RheingruenApp {
               ${isLive ? `<span class="card-live-pill">LIVE</span>` : ""}
             </div>
             <button class="card-fav-btn ${isFav ? "favorited" : ""}" data-act-id="${act.id}" title="Favorit" aria-label="Favorit">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="${isFav ? "#FF4B6E" : "none"}" stroke="currentColor" stroke-width="2">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="${isFav ? this.favColor : "none"}" stroke="currentColor" stroke-width="2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
             </button>
@@ -915,7 +1115,6 @@ class RheingruenApp {
 
     const allActs = [];
     const dayConf = this.getCurrentDayConfig();
-    const isOvernight = Boolean(dayConf.isOvernight);
 
     // If searching, search across ALL events and days
     if (this.searchQuery) {
@@ -923,7 +1122,7 @@ class RheingruenApp {
         const dConf = this.config.days.find((d) => d.id === dayId) || {};
         const dStages = dConf.stages || this.config.stages;
         for (const [stageId, acts] of Object.entries(stages)) {
-          const stageConfig = dStages.find((s) => s.id === stageId) || { name: stageId, color: "#00FF87" };
+          const stageConfig = dStages.find((s) => s.id === stageId) || { name: stageId, color: this.config.theme?.accentColor || "#00FF87" };
           acts.forEach((act) => {
             if (this.filterAct(act)) {
               allActs.push({
@@ -967,12 +1166,15 @@ class RheingruenApp {
       const isLive = this.isActLive(act);
       const isFav = this.favorites.has(act.id);
       const durationMin = this.getDurationMinutes(act.start, act.end, actOvernight);
-      const dayPrefix = this.searchQuery && act.dayConfig ? `${act.dayConfig.label} · ` : "";
+      const dayPrefix = this.searchQuery && act.dayConfig?.label ? `${act.dayConfig.label} · ` : "";
 
       const card = document.createElement("div");
       card.className = `list-item-card ${isLive ? "is-live" : ""}`;
       card.dataset.stage = act.stage;
       card.dataset.actId = act.id;
+      if (act.stageConfig?.color) {
+        card.style.setProperty("--stage-color", act.stageConfig.color);
+      }
 
       card.innerHTML = `
         <div class="list-time-block">
@@ -982,11 +1184,11 @@ class RheingruenApp {
 
         <div class="list-info-block">
           <div class="list-artist-title">${act.artist}</div>
-          <span class="list-stage-label stage-${act.stage}" style="color: ${act.stageConfig.color};">${dayPrefix}${act.stageConfig.name}</span>
+          <span class="list-stage-label" style="color: ${act.stageConfig.color};">${dayPrefix}${act.stageConfig.name}</span>
         </div>
 
         <button class="card-fav-btn ${isFav ? "favorited" : ""}" data-act-id="${act.id}" title="Favorit">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="${isFav ? "#FF4B6E" : "none"}" stroke="currentColor" stroke-width="2">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="${isFav ? this.favColor : "none"}" stroke="currentColor" stroke-width="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
           </svg>
         </button>
@@ -1103,7 +1305,7 @@ class RheingruenApp {
     const dayConf = this.getCurrentDayConfig();
     const isOvernight = Boolean(dayConf.isOvernight);
     const startMins = dayConf.startHour * 60;
-    const endMins = (isOvernight && dayConf.endHour < dayConf.startHour)
+    const endMins = (isOvernight && dayConf.endHour <= dayConf.startHour)
       ? (dayConf.endHour + 24) * 60
       : dayConf.endHour * 60;
 
@@ -1186,12 +1388,11 @@ class RheingruenApp {
   // "Jump to Now" Smooth Scroll
   // --------------------------------------------------------------------------
   jumpToNow(silent = false, instant = false) {
-    // If explicitly invoked by user click and current day is not the active festival day, switch to it!
+    // If explicitly invoked by user click and current day is not the active festival day, switch to it
     if (!silent) {
       const activeDay = this.detectInitialDay();
       if (this.currentDay !== activeDay) {
         this.setDay(activeDay);
-        // After switching day, jumpToNow is invoked
         return;
       }
     }
@@ -1208,7 +1409,7 @@ class RheingruenApp {
     const dayConf = this.getCurrentDayConfig();
     const isOvernight = Boolean(dayConf.isOvernight);
     const startMins = dayConf.startHour * 60;
-    const endMins = (isOvernight && dayConf.endHour < dayConf.startHour)
+    const endMins = (isOvernight && dayConf.endHour <= dayConf.startHour)
       ? (dayConf.endHour + 24) * 60
       : dayConf.endHour * 60;
 
@@ -1262,11 +1463,12 @@ class RheingruenApp {
 
     const stages = dayConf.stages || this.config.stages;
     const stageConfig = stages.find((s) => s.id === act.stage) || this.config.stages.find((s) => s.id === act.stage) || {};
+    const stageColor = stageConfig.color || this.config.theme?.accentColor || "#00FF87";
 
     // Header Details
     this.modalStageBadge.textContent = act.stageName;
-    this.modalStageBadge.style.backgroundColor = stageConfig.badgeBg || "rgba(0,255,135,0.15)";
-    this.modalStageBadge.style.color = stageConfig.color || "#00FF87";
+    this.modalStageBadge.style.backgroundColor = stageConfig.badgeBg || `color-mix(in srgb, ${stageColor} 15%, transparent)`;
+    this.modalStageBadge.style.color = stageColor;
 
     this.modalArtist.textContent = act.artist;
     this.modalTime.textContent = `${act.start} – ${act.end}`;
@@ -1370,8 +1572,9 @@ class RheingruenApp {
   // First-Visit Disclaimer
   // --------------------------------------------------------------------------
   checkDisclaimer() {
+    if (!this.config.disclaimer?.enabled) return;
     try {
-      const isDismissed = localStorage.getItem("rg_disclaimer_dismissed");
+      const isDismissed = localStorage.getItem(this.storageKeys.disclaimer);
       if (!isDismissed && this.disclaimerModal) {
         this.disclaimerModal.classList.remove("hidden");
         document.body.style.overflow = "hidden";
@@ -1382,7 +1585,7 @@ class RheingruenApp {
   }
 
   openDisclaimerModal() {
-    if (this.disclaimerModal) {
+    if (this.disclaimerModal && this.config.disclaimer?.enabled) {
       this.disclaimerModal.classList.remove("hidden");
       document.body.style.overflow = "hidden";
     }
@@ -1390,7 +1593,7 @@ class RheingruenApp {
 
   dismissDisclaimer() {
     try {
-      localStorage.setItem("rg_disclaimer_dismissed", "true");
+      localStorage.setItem(this.storageKeys.disclaimer, "true");
     } catch (e) {
       console.warn("Could not save disclaimer preference", e);
     }
@@ -1408,7 +1611,7 @@ class RheingruenApp {
   // Privacy Policy Modal
   // --------------------------------------------------------------------------
   openPrivacyModal() {
-    if (this.privacyModal) {
+    if (this.privacyModal && this.config.legal?.privacy?.enabled) {
       this.privacyModal.classList.remove("hidden");
       document.body.style.overflow = "hidden";
     }
@@ -1441,7 +1644,7 @@ class RheingruenApp {
 
     if (!iabParam) {
       try {
-        if (sessionStorage.getItem("rg_iab_dismissed") === "true") {
+        if (sessionStorage.getItem(this.storageKeys.iab) === "true") {
           return;
         }
       } catch (e) {
@@ -1500,7 +1703,7 @@ class RheingruenApp {
       btnDismiss.addEventListener("click", () => {
         banner.classList.add("hidden");
         try {
-          sessionStorage.setItem("rg_iab_dismissed", "true");
+          sessionStorage.setItem(this.storageKeys.iab, "true");
         } catch (e) {
           // ignore
         }
@@ -1628,7 +1831,7 @@ class RheingruenApp {
             });
           });
 
-          // Proactively check for new version on GitHub
+          // Proactively check for new version
           reg.update().catch(() => {});
 
           // Check on app visibility resume / tab focus
@@ -1725,13 +1928,13 @@ class RheingruenApp {
     const isStandalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
     let isDismissed = false;
     try {
-      isDismissed = localStorage.getItem("rg_ios_prompt_dismissed") === "true";
+      isDismissed = localStorage.getItem(this.storageKeys.iosPrompt) === "true";
     } catch (e) {}
 
     if (isIos && !isStandalone && !isDismissed) {
       setTimeout(() => {
         try {
-          if (localStorage.getItem("rg_ios_prompt_dismissed") !== "true") {
+          if (localStorage.getItem(this.storageKeys.iosPrompt) !== "true") {
             this.iosInstallToast?.classList.remove("hidden");
           }
         } catch (e) {}
@@ -1743,7 +1946,7 @@ class RheingruenApp {
         e.stopPropagation();
         this.iosInstallToast?.classList.add("hidden");
         try {
-          localStorage.setItem("rg_ios_prompt_dismissed", "true");
+          localStorage.setItem(this.storageKeys.iosPrompt, "true");
         } catch (err) {}
       });
     }
@@ -1752,5 +1955,5 @@ class RheingruenApp {
 
 // Start application when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
-  window.rheingruenApp = new RheingruenApp();
+  window.timetableApp = new TimetableApp();
 });
