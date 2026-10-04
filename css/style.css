@@ -182,21 +182,6 @@ html, body {
   line-height: 1.1;
 }
 
-.brand-logo-img {
-  height: 24px;
-  width: auto;
-  max-width: 170px;
-  object-fit: contain;
-  display: block;
-}
-
-@media (min-width: 768px) {
-  .brand-logo-img {
-    height: 28px;
-    max-width: 210px;
-  }
-}
-
 .brand-name {
   color: var(--neon-green);
   text-shadow: 0 0 16px var(--neon-green-glow);

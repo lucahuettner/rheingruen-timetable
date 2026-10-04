@@ -159,15 +159,11 @@ class TimetableApp {
 
     const brandTitleEl = document.getElementById("brand-title");
     const brandSubEl = document.getElementById("brand-subtitle");
-    if (brandTitleEl) {
-      if (b.logoImage) {
-        brandTitleEl.innerHTML = `<img src="${b.logoImage}" alt="${b.title || 'Event Logo'}" class="brand-logo-img">`;
-      } else if (b.title) {
-        if (b.typeLabel) {
-          brandTitleEl.innerHTML = `<span class="brand-name">${b.title}</span><span class="brand-pill-tag">${b.typeLabel}</span>`;
-        } else {
-          brandTitleEl.textContent = b.title;
-        }
+    if (brandTitleEl && b.title) {
+      if (b.typeLabel) {
+        brandTitleEl.innerHTML = `<span class="brand-name">${b.title}</span><span class="brand-pill-tag">${b.typeLabel}</span>`;
+      } else {
+        brandTitleEl.textContent = b.title;
       }
     }
     if (brandSubEl && b.subtitle) brandSubEl.textContent = b.subtitle;
