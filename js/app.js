@@ -506,6 +506,19 @@ class TimetableApp {
     return this.timeToMinutes(end, isOvernight) - this.timeToMinutes(start, isOvernight);
   }
 
+  formatArtistHtml(artist) {
+    if (!artist) return "";
+    const escaped = String(artist)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+    let formatted = escaped.replace(/\b(B2B|F2F|b2b|f2f)\b/g, '<span class="act-separator">$1</span>');
+    formatted = formatted.replace(/\s+&amp;\s+/g, ' <span class="act-separator">&amp;</span> ');
+    formatted = formatted.replace(/(\((?:LIVE|Live)\))/g, '<span class="act-live-tag">$1</span>');
+    return formatted;
+  }
+
   getEffectiveCurrentMinutes(isOvernight = false) {
     let mins = this.nowMinutes;
     if (isOvernight) {
@@ -1079,7 +1092,7 @@ class TimetableApp {
           </div>
 
           <div class="card-body">
-            <div class="card-artist">${act.artist}</div>
+            <div class="card-artist">${this.formatArtistHtml(act.artist)}</div>
           </div>
 
           <div class="card-footer">
@@ -1192,7 +1205,7 @@ class TimetableApp {
         </div>
 
         <div class="list-info-block">
-          <div class="list-artist-title">${act.artist}</div>
+          <div class="list-artist-title">${this.formatArtistHtml(act.artist)}</div>
           <span class="list-stage-label" style="color: ${act.stageConfig.color};">${dayPrefix}${act.stageConfig.name}</span>
         </div>
 
@@ -1479,7 +1492,7 @@ class TimetableApp {
     this.modalStageBadge.style.backgroundColor = stageConfig.badgeBg || `color-mix(in srgb, ${stageColor} 15%, transparent)`;
     this.modalStageBadge.style.color = stageColor;
 
-    this.modalArtist.textContent = act.artist;
+    this.modalArtist.innerHTML = this.formatArtistHtml(act.artist);
     this.modalTime.textContent = `${act.start} – ${act.end}`;
     const durationMin = this.getDurationMinutes(act.start, act.end, isOvernight);
     this.modalDuration.textContent = `(${durationMin} Min.)`;
