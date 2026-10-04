@@ -1,118 +1,65 @@
 /**
  * Event Timetable Configuration & Schedule Data
  * ============================================================================
- * Passen Sie für ein neues Event einfach EVENT_CONFIG und SCHEDULE_DATA an.
- * Alle Farben, Tabs, Bühnen, Zeiten, Disclaimer-Links und Rechtstexte werden
- * automatisch aus dieser Datei generiert.
+ * Konfiguriert für: HIVE INDOOR 2026 (Messe Leipzig)
  */
 
 export const EVENT_CONFIG = {
   // Eindeutige Event-ID (wird als Präfix für localStorage/sessionStorage verwendet)
-  id: "rheingruen-2026",
+  id: "hive-indoor-2026",
 
   // 1. Branding & Meta-Tags
   branding: {
-    title: "RHEINGRÜN",
-    subtitle: "OPEN AIR · 19.–20. SEP",
-    typeLabel: "OPEN AIR",
-    shortName: "Rheingrün",
-    pageTitle: "Timetable – Rheingrün Festival 2026",
-    description: "Festival-Zeitplan mit Live-Uhrzeit, Stages und Favoriten. Funktioniert komplett offline."
+    title: "HIVE INDOOR",
+    subtitle: "17. OKT · MESSE LEIPZIG",
+    typeLabel: "INDOOR",
+    shortName: "HIVE Indoor",
+    pageTitle: "Timetable – HIVE Indoor 2026",
+    description: "Festival-Zeitplan für das HIVE Indoor 2026 in der Messe Leipzig (Techno Colosseum, Iron Vault, Cargo Bay & Rage Box). 100 % offline nutzbar."
   },
 
-  // 2. Farbschema & Zeitraster
+  // 2. Farbschema & Zeitraster (HIVE Industrial Red, Steel & Obsidian Theme)
   theme: {
-    accentColor: "#00FF87",        // Haupt-Akzentfarbe (Live-Indikator, aktive Tabs, Fokus)
-    secondaryColor: "#60EFFF",     // Sekundäre Akzentfarbe
-    favoriteColor: "#FF4B6E",      // Farbe für Favoriten-Herzen
-    bgDark: "#0b120f",             // App-Hintergrund
-    bgSurface: "#101a15",          // Header & Listen-Karten
-    bgSurfaceElevated: "#15221c",  // Hervorgehobene Elemente / Modals
-    bgSurfaceCard: "#121c17",      // Grid-Karten Hintergrund
+    accentColor: "#FF1E27",        // HIVE Signal Red (Live-Indikator, Fokus, Badges)
+    accentContrast: "#FFFFFF",     // Kontrast-Textfarbe auf Haupt-Akzentfarbe
+    secondaryColor: "#E2E8F0",     // Industrial Chrome / Silver
+    favoriteColor: "#FF1E27",      // Farbe für Favoriten-Herzen
+    bgBlack: "#060608",            // App-Außenhintergrund (Deep Obsidian)
+    bgDark: "#0A0B0E",             // Haupt-Hintergrund (Industrial Carbon)
+    bgSurface: "#111318",          // Header & Listen-Karten
+    bgSurfaceElevated: "#181B22",  // Hervorgehobene Elemente / Modals
+    bgSurfaceCard: "#13161C",      // Grid-Karten Hintergrund
     pxPerMinute: 2                 // Vertikale Skalierung (2px/Min = 120px pro Stunde)
   },
 
-  // 3. Standard-Stages (werden genutzt, sofern ein Tag keine eigenen `stages` definiert)
+  // 3. Bühnen / Floors (Reihenfolge von links nach rechts im Grid)
   stages: [
-    { id: "mainstage", name: "Mainstage", color: "#00FF87" },
-    { id: "f2f", name: "F2F Stage", color: "#60EFFF" },
-    { id: "hidden", name: "Hidden Stage", color: "#C084FC" }
+    { id: "techno_colosseum", name: "Techno Colosseum", color: "#FF1E27" },
+    { id: "iron_vault", name: "Iron Vault", color: "#38BDF8" },
+    { id: "cargo_bay", name: "Cargo Bay", color: "#FF7A00" },
+    { id: "rage_box", name: "Rage Box", color: "#D946EF" }
   ],
 
-  // Standardmäßig ausgewählter Tab außerhalb des Event-Zeitraums
+  // Standardmäßig ausgewählter Tag
   defaultDayId: "saturday",
 
-  // 4. Event-Tage / Abschnitte (Reihenfolge bestimmt die Reihenfolge in der Navigation)
-  // Hinweis: Ist `endHour <= startHour` (z. B. 22 bis 6 Uhr), wird automatisch ein Nacht-Überlauf erkannt.
+  // 4. Event-Tage (Da nur 1 durchgehendes Nacht-Event von 15:00 bis 05:00 Uhr existiert,
+  // blendet die App die Tages-Tab-Leiste automatisch aus)
   days: [
-    {
-      id: "friday_pre",
-      badge: "FR",
-      title: "Pre-Party",
-      subtitle: "Gotec",
-      isoDate: "2026-09-18",
-      startHour: 22,
-      endHour: 6,
-      stages: [
-        { id: "gotec_main", name: "Gotec Main", color: "#00FF87" }
-      ]
-    },
     {
       id: "saturday",
       badge: "SA",
-      title: "Festival",
-      subtitle: "19. SEP",
-      isoDate: "2026-09-19",
-      startHour: 11,
-      endHour: 23
-    },
-    {
-      id: "saturday_after",
-      badge: "SA",
-      title: "Aftershow",
-      subtitle: "Gotec & Elfino",
-      isoDate: "2026-09-19",
-      startHour: 22,
-      endHour: 9,
-      stages: [
-        { id: "gotec_main", name: "Gotec Mainfloor", color: "#00FF87" },
-        { id: "gotec_boiler", name: "Gotec Boiler F2F", color: "#60EFFF" },
-        { id: "gotec_cube", name: "Gotec Cube", color: "#C084FC" },
-        { id: "elfino", name: "Elfino", color: "#FF7170" }
-      ]
-    },
-    {
-      id: "sunday",
-      badge: "SO",
-      title: "Festival",
-      subtitle: "20. SEP",
-      isoDate: "2026-09-20",
-      startHour: 11,
-      endHour: 23
+      title: "HIVE Indoor",
+      subtitle: "17. OKT",
+      isoDate: "2026-10-17",
+      startHour: 15,
+      endHour: 5
     }
   ],
 
-  // 5. Optionaler Erstbesucher-Disclaimer (für offizielle Timetables einfach `enabled: false` setzen)
+  // 5. Optionaler Erstbesucher-Disclaimer (deaktiviert)
   disclaimer: {
-    enabled: true,
-    badge: "INOFFIZIELLER FAN-TIMETABLE",
-    title: "Wichtiger Hinweis",
-    introHtml: "Diese Web-App ist ein <strong>privates, inoffizielles Projekt</strong> für Freunde und Besucher, um den Zeitplan auf dem Festivalgelände schnell und 100 % offline nutzen zu können.",
-    subHtml: "Dies ist <em>keine</em> offizielle Seite des Festival-Veranstalters. Für alle verbindlichen Infos, offizielle Updates, Timetable-Änderungen und Lagepläne besuche bitte die offiziellen Kanäle:",
-    confirmLabel: "Verstanden & weiter zum Zeitplan",
-    links: [
-      {
-        label: "Offizielle Festival-Website",
-        url: "https://rheingruen-openair.de/",
-        icon: "globe"
-      },
-      {
-        label: "Instagram (@rheingruen_festival)",
-        url: "https://www.instagram.com/rheingruen_festival/",
-        icon: "instagram",
-        variant: "instagram"
-      }
-    ]
+    enabled: false
   },
 
   // 6. Footer-Credits & Datenschutzerklärung
@@ -133,111 +80,68 @@ export const EVENT_CONFIG = {
 };
 
 /**
- * Zeitplan-Daten (gruppiert nach `day.id` -> `stage.id`)
- * Jeder Slot benötigt lediglich `{ artist, start, end }`.
- * IDs, Bühnennamen und Tageszuordnungen werden automatisch generiert.
+ * Zeitplan-Daten für HIVE INDOOR (15:00 – 05:00 Uhr)
  */
 export const SCHEDULE_DATA = {
-  // ==========================================================================
-  // FESTIVAL: SAMSTAG
-  // ==========================================================================
   saturday: {
-    mainstage: [
-      { artist: "SAIKA", start: "11:00", end: "13:00" },
-      { artist: "LOLA CERISE B2B GUSTAV ØRGANO", start: "13:00", end: "14:30" },
-      { artist: "DASSTUDACH", start: "14:30", end: "16:00" },
-      { artist: "KANDER", start: "16:00", end: "18:00" },
-      { artist: "USH B2B SLVL", start: "18:00", end: "19:30" },
-      { artist: "VIEZE ASBAK", start: "19:30", end: "21:00" },
-      { artist: "NATTE VISSTICK B2B JOWI", start: "21:00", end: "22:30" }
+    // ========================================================================
+    // TECHNO COLOSSEUM
+    // ========================================================================
+    techno_colosseum: [
+      { artist: "ÜBERKIKZ B2B FELICIE", start: "15:00", end: "16:30" },
+      { artist: "YANAMASTE", start: "16:30", end: "18:00" },
+      { artist: "KLANGKUENSTLER", start: "18:00", end: "19:30" },
+      { artist: "SCHROTTHAGEN", start: "19:30", end: "21:00" },
+      { artist: "KOBOSIL", start: "21:00", end: "22:30" },
+      { artist: "NICO MORENO", start: "22:30", end: "00:00" },
+      { artist: "HOLY PRIEST", start: "00:00", end: "01:30" },
+      { artist: "WINSON B2B KLOFAMA", start: "01:30", end: "03:30" },
+      { artist: "NOTMYTYPE", start: "03:30", end: "05:00" }
     ],
-    f2f: [
-      { artist: "DJ BLUSH F2F LENSCH", start: "13:00", end: "14:30" },
-      { artist: "ROT.TON F2F DJ SEXSTASY", start: "14:30", end: "16:00" },
-      { artist: "DJ HYPERDRIVE F2F LAURE CROFT", start: "16:00", end: "17:30" },
-      { artist: "ELLI ACULA F2F MAC DECLOS", start: "17:30", end: "19:30" },
-      { artist: "ALARICO F2F SHDW", start: "19:30", end: "21:00" },
-      { artist: "FUTURE.666 F2F FENIM0RE", start: "21:00", end: "22:30" }
-    ],
-    hidden: [
-      { artist: "ANTIGEN B2B LILLI&4LOVE", start: "14:00", end: "15:30" },
-      { artist: "THE MUFFIN MAN B2B ALYCIA BEZGO", start: "15:30", end: "17:00" },
-      { artist: "TRANCEMASTER KRAUSE B2B BIXBITA", start: "17:00", end: "18:30" },
-      { artist: "DAVYBOI B2B PETERBLUE", start: "18:30", end: "20:00" },
-      { artist: "MIKA HEGGEMANN B2B CLEOPARD2000", start: "20:00", end: "22:00" }
-    ]
-  },
 
-  // ==========================================================================
-  // FESTIVAL: SONNTAG
-  // ==========================================================================
-  sunday: {
-    mainstage: [
-      { artist: "PØNTI", start: "11:00", end: "12:30" },
-      { artist: "KOTORRI", start: "12:30", end: "14:00" },
-      { artist: "SCHROTTHAGEN", start: "14:00", end: "15:30" },
-      { artist: "NICOLAS JULIAN", start: "15:30", end: "17:00" },
-      { artist: "NIKOLINA", start: "17:00", end: "18:30" },
-      { artist: "VENDEX", start: "18:30", end: "20:00" },
-      { artist: "JAZZY", start: "20:00", end: "21:30" },
-      { artist: "SURPRISE CLOSING 👀", start: "21:30", end: "22:00" }
+    // ========================================================================
+    // IRON VAULT
+    // ========================================================================
+    iron_vault: [
+      { artist: "NOISE NOT WAR B2B TRÜMMER (LIVE)", start: "15:00", end: "16:30" },
+      { artist: "BEN TECHY B2B LUCIID", start: "16:30", end: "18:00" },
+      { artist: "OBSCURE SHAPE B2B NEON GRAVEYARD", start: "18:00", end: "19:30" },
+      { artist: "NIKOLINA B2B KLOUD", start: "19:30", end: "21:00" },
+      { artist: "TRIPTYKH B2B O.B.I.", start: "21:00", end: "23:00" },
+      { artist: "IN VERRUF B2B ORNELLA", start: "23:00", end: "00:30" },
+      { artist: "CHARLIE SPARKS B2B NICOLAS JULIAN", start: "00:30", end: "02:00" },
+      { artist: "A.N.I. B2B OMAKS", start: "02:00", end: "03:30" }
     ],
-    f2f: [
-      { artist: "DVAID F2F RELAJADITA", start: "12:30", end: "14:00" },
-      { artist: "WILDERÍCH F2F ZWILLING", start: "14:00", end: "15:30" },
-      { artist: "L.ZWO F2F ANTONYM", start: "15:30", end: "17:00" },
-      { artist: "NOISE MAFIA F2F FENRICK", start: "17:00", end: "18:30" },
-      { artist: "CLOUDY F2F SERAFINA", start: "18:30", end: "20:00" },
-      { artist: "ADRIÁN MILLS F2F PRADA2000", start: "20:00", end: "22:00" }
-    ],
-    hidden: [
-      { artist: "TAMARA WIRTH", start: "14:30", end: "16:00" },
-      { artist: "DJ SWISHERMAN", start: "16:00", end: "17:30" },
-      { artist: "FREDERIC. B2B STEF DE HAAN", start: "17:30", end: "19:00" },
-      { artist: "AEREA (LIVE)", start: "19:00", end: "20:00" },
-      { artist: "DAX J", start: "20:00", end: "22:00" }
-    ]
-  },
 
-  // ==========================================================================
-  // CLUB: FRIDAY PRE-PARTY
-  // ==========================================================================
-  friday_pre: {
-    gotec_main: [
-      { artist: "4000 HZ", start: "22:00", end: "00:00" },
-      { artist: "MXGN", start: "00:00", end: "02:00" },
-      { artist: "MIKA HEGGEMANN", start: "02:00", end: "04:00" },
-      { artist: "SIKOTI B2B AISHA", start: "04:00", end: "06:00" }
-    ]
-  },
+    // ========================================================================
+    // CARGO BAY
+    // ========================================================================
+    cargo_bay: [
+      { artist: "SAGEZZA", start: "15:00", end: "17:00" },
+      { artist: "TIEFUNDTON", start: "17:00", end: "18:30" },
+      { artist: "KAACEE KOMACASPER", start: "18:30", end: "19:30" },
+      { artist: "DIE GEBRÜDER BRETT", start: "19:30", end: "20:30" },
+      { artist: "POLTERGST", start: "20:30", end: "21:30" },
+      { artist: "KØ:LAB & ANUUK & DONCHOPPA", start: "21:30", end: "22:30" },
+      { artist: "GIØ B2B ZWILLING.", start: "22:30", end: "00:00" },
+      { artist: "L.ZWO B2B 2HOT2PLAY", start: "00:00", end: "01:30" },
+      { artist: "DJ DRECKISCH B2B DICE", start: "01:30", end: "03:00" },
+      { artist: "NOISE MAFIA B2B FENRICK", start: "03:00", end: "05:00" }
+    ],
 
-  // ==========================================================================
-  // CLUB: SATURDAY AFTERSHOW
-  // ==========================================================================
-  saturday_after: {
-    gotec_main: [
-      { artist: "SHANIXX", start: "22:00", end: "00:00" },
-      { artist: "KANDER", start: "00:00", end: "02:00" },
-      { artist: "DASSTUDACH B2B ALT8", start: "02:00", end: "04:00" },
-      { artist: "JOWI", start: "04:00", end: "05:30" },
-      { artist: "VIEZE ASBAK B2B NATTE VISSTICK", start: "05:30", end: "07:00" },
-      { artist: "B2B2B", start: "07:00", end: "09:00" }
-    ],
-    gotec_boiler: [
-      { artist: "SAIKA F2F PØNTI", start: "00:00", end: "02:00" },
-      { artist: "ALEX FARELL F2F LOLA CERISE", start: "02:00", end: "04:00" },
-      { artist: "BEN TECHY F2F NEON GRAVEYARD", start: "04:00", end: "06:00" }
-    ],
-    gotec_cube: [
-      { artist: "BOUND", start: "00:00", end: "02:00" },
-      { artist: "ANTONYM", start: "02:00", end: "03:30" },
-      { artist: "DATSKO", start: "03:30", end: "05:00" }
-    ],
-    elfino: [
-      { artist: "CHERRY", start: "23:00", end: "00:30" },
-      { artist: "KOTORRI", start: "00:30", end: "02:00" },
-      { artist: "SAMUEL MORIERO", start: "02:00", end: "03:30" },
-      { artist: "SANTINO ZERVOS B2B TEOMAN", start: "03:30", end: "05:00" }
+    // ========================================================================
+    // RAGE BOX
+    // ========================================================================
+    rage_box: [
+      { artist: "ALLY B2B SALTYSIS", start: "15:00", end: "16:00" },
+      { artist: "IKKHI B2B TITI", start: "16:00", end: "17:00" },
+      { artist: "IGDA B2B JOVYNN", start: "17:00", end: "18:30" },
+      { artist: "NATTE VISSTICK B2B MAD DOG", start: "18:30", end: "20:00" },
+      { artist: "SLVL B2B TOXIC MACHINERY", start: "20:00", end: "21:30" },
+      { artist: "USH B2B JOWI", start: "21:30", end: "23:00" },
+      { artist: "VORTEK'S B2B WILLIAM LUCK", start: "23:00", end: "01:00" },
+      { artist: "ANGERFIST B2B VIEZE ASBAK", start: "01:00", end: "02:30" },
+      { artist: "BØĘRY B2B SANTØS", start: "02:30", end: "04:00" }
     ]
   }
 };

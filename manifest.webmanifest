@@ -1,14 +1,14 @@
 {
-  "name": "Rheingrün Festival Timetable",
-  "short_name": "Rheingrün",
-  "description": "Festival-Zeitplan für das Rheingrün Festival 2026. Funktioniert offline mit Live-Uhrzeitanzeige.",
+  "name": "HIVE Indoor 2026 – Timetable",
+  "short_name": "HIVE Indoor",
+  "description": "Zeitplan für das HIVE Indoor 2026 in der Messe Leipzig. Funktioniert 100 % offline mit Live-Uhrzeitanzeige.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "any",
-  "background_color": "#050907",
-  "theme_color": "#050907",
+  "background_color": "#060608",
+  "theme_color": "#0A0B0E",
   "lang": "de-DE",
   "categories": ["music", "entertainment", "events"],
   "icons": [
@@ -35,22 +35,6 @@
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Samstag Timetable",
-      "short_name": "Samstag",
-      "description": "Samstag Zeitplan ansehen",
-      "url": "./index.html?day=saturday",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Sonntag Timetable",
-      "short_name": "Sonntag",
-      "description": "Sonntag Zeitplan ansehen",
-      "url": "./index.html?day=sunday",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

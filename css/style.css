@@ -50,21 +50,22 @@
 }
 
 :root {
-  /* Official Rheingrün Color Palette */
-  --bg-black: #060a08;
-  --bg-dark: #0b120f;
-  --bg-surface: #101a15;
-  --bg-surface-elevated: #15221c;
-  --bg-surface-card: #121c17;
+  /* Default Event Color Palette (Overridden dynamically via EVENT_CONFIG.theme) */
+  --bg-black: #060608;
+  --bg-dark: #0A0B0E;
+  --bg-surface: #111318;
+  --bg-surface-elevated: #181B22;
+  --bg-surface-card: #13161C;
   
   --border-subtle: rgba(255, 255, 255, 0.08);
 
   /* Brand Accents (Dynamically configurable via EVENT_CONFIG.theme) */
-  --neon-green: #00FF87;
-  --neon-green-glow: rgba(0, 255, 135, 0.35);
-  --neon-green-subtle: rgba(0, 255, 135, 0.12);
-  --neon-cyan: #60EFFF;
-  --fav-color: #FF4B6E;
+  --neon-green: #FF1E27;
+  --accent-contrast: #FFFFFF;
+  --neon-green-glow: color-mix(in srgb, var(--neon-green) 35%, transparent);
+  --neon-green-subtle: color-mix(in srgb, var(--neon-green) 14%, transparent);
+  --neon-cyan: #E2E8F0;
+  --fav-color: #FF1E27;
 
   --text-primary: #F8FAFC;
   --text-secondary: #94A3B8;
@@ -74,8 +75,8 @@
   --time-axis-width: 62px;
   --stage-col-min-width: 250px;
   --px-per-minute: 2px; /* 60 min = 120px */
-  --timeline-start-minutes: 660; /* 11:00 AM */
-  --timeline-end-minutes: 1380;   /* 23:00 PM */
+  --timeline-start-minutes: 660;
+  --timeline-end-minutes: 1380;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -98,8 +99,8 @@ html, body {
   height: 100%;
   background-color: var(--bg-dark);
   background-image: 
-    radial-gradient(60% 360px at 50% 0%, rgba(64, 145, 108, 0.15), transparent 100%),
-    linear-gradient(180deg, #0c1310 0%, #0b120f 45%, #060a08 100%);
+    radial-gradient(60% 360px at 50% 0%, color-mix(in srgb, var(--neon-green) 14%, transparent), transparent 100%),
+    linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-dark) 45%, var(--bg-black) 100%);
   color: var(--text-primary);
   font-family: 'Barlow', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 14px;
@@ -125,7 +126,7 @@ html, body {
    HEADER
    -------------------------------------------------------------------------- */
 .app-header {
-  background: rgba(8, 13, 11, 0.85);
+  background: color-mix(in srgb, var(--bg-dark) 88%, transparent);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
@@ -165,7 +166,7 @@ html, body {
   font-size: 1.15rem;
   font-weight: 800;
   letter-spacing: 1.5px;
-  background: linear-gradient(135deg, #FFFFFF 20%, var(--neon-green) 100%);
+  background: linear-gradient(135deg, #FFFFFF 25%, var(--neon-green) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-transform: uppercase;
@@ -228,13 +229,13 @@ html, body {
 
 .btn-now {
   background: var(--neon-green-subtle);
-  border-color: rgba(0, 255, 135, 0.3);
+  border-color: color-mix(in srgb, var(--neon-green) 40%, transparent);
   color: var(--neon-green);
 }
 
 @media (hover: hover) {
   .btn-now:hover {
-    background: rgba(0, 255, 135, 0.25);
+    background: color-mix(in srgb, var(--neon-green) 25%, transparent);
     border-color: var(--neon-green);
     box-shadow: 0 0 10px var(--neon-green-glow);
   }
@@ -242,7 +243,7 @@ html, body {
 
 .btn-now:active,
 .btn-now.is-pressed {
-  background: rgba(0, 255, 135, 0.35);
+  background: color-mix(in srgb, var(--neon-green) 35%, transparent);
   border-color: var(--neon-green);
   box-shadow: 0 0 12px var(--neon-green-glow);
   transform: scale(0.95);
@@ -252,7 +253,8 @@ html, body {
   font-family: monospace;
   font-size: 0.75rem;
   font-weight: 700;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--text-primary);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -263,19 +265,19 @@ html, body {
 }
 
 .btn-fav-filter.active {
-  background: rgba(255, 75, 110, 0.2);
-  border-color: #FF4B6E;
-  color: #FF4B6E;
+  background: color-mix(in srgb, var(--fav-color) 20%, transparent);
+  border-color: var(--fav-color);
+  color: var(--fav-color);
 }
 
 .btn-fav-filter.active .star-icon {
-  fill: #FF4B6E;
-  stroke: #FF4B6E;
+  fill: var(--fav-color);
+  stroke: var(--fav-color);
 }
 
 .btn-install {
   background: var(--neon-green);
-  color: #000000;
+  color: var(--accent-contrast, #FFFFFF);
   font-weight: 700;
   border: none;
 }
@@ -340,24 +342,17 @@ html, body {
   transform: scale(0.97);
 }
 
-/* Active State - Festival (Neon Green) */
+/* Active State */
 .event-pill.active {
   background: var(--bg-surface-elevated);
   color: var(--neon-green);
-  border-color: rgba(0, 255, 135, 0.5);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(0, 255, 135, 0.35);
-}
-
-/* Active State - Club (Neon Cyan) */
-.event-pill[data-day="friday_pre"].active,
-.event-pill[data-day="saturday_after"].active {
-  color: var(--neon-cyan);
-  border-color: rgba(96, 239, 255, 0.5);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(96, 239, 255, 0.35);
+  border-color: color-mix(in srgb, var(--neon-green) 50%, transparent);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px color-mix(in srgb, var(--neon-green) 35%, transparent);
 }
 
 /* Day Badges - Neutral & Quiet when Inactive */
-.pill-badge {
+.pill-badge,
+.pill-day-badge {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.5px;
@@ -370,31 +365,24 @@ html, body {
   transition: all 0.2s ease;
 }
 
-/* Active State: Festival Badges (Solid Neon Green) */
+/* Active State: Badges */
 .event-pill.active .pill-badge,
-.event-pill[data-day="saturday"].active .pill-badge,
-.event-pill[data-day="sunday"].active .pill-badge {
-  background: var(--neon-green, #00FF87) !important;
-  color: #060a08 !important;
+.event-pill.active .pill-day-badge {
+  background: var(--neon-green) !important;
+  color: var(--accent-contrast, #FFFFFF) !important;
   font-weight: 800;
 }
 
-/* Active State: Club Badges (Solid Neon Cyan) */
-.event-pill[data-day="friday_pre"].active .pill-badge,
-.event-pill[data-day="saturday_after"].active .pill-badge {
-  background: var(--neon-cyan, #60EFFF) !important;
-  color: #060a08 !important;
-  font-weight: 800;
-}
-
-.pill-meta {
+.pill-meta,
+.pill-text-col {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
 
-.pill-title {
+.pill-title,
+.pill-main-title {
   font-weight: 800;
   font-size: 0.88rem;
   letter-spacing: 0.3px;
@@ -402,7 +390,8 @@ html, body {
   white-space: nowrap;
 }
 
-.pill-sub {
+.pill-sub,
+.pill-sub-venue {
   font-size: 0.72rem;
   font-weight: 500;
   opacity: 0.75;
@@ -410,7 +399,8 @@ html, body {
   white-space: nowrap;
 }
 
-.event-pill.active .pill-sub {
+.event-pill.active .pill-sub,
+.event-pill.active .pill-sub-venue {
   opacity: 0.9;
 }
 
@@ -543,7 +533,7 @@ html, body {
 .stage-headers-track {
   position: relative;
   display: flex;
-  background: rgba(14, 22, 19, 0.95);
+  background: color-mix(in srgb, var(--bg-surface) 95%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 2px solid var(--border-subtle);
@@ -560,8 +550,8 @@ html, body {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(18, 26, 22, 0.92);
-  border: 1px solid rgba(0, 255, 135, 0.4);
+  background: color-mix(in srgb, var(--bg-surface-elevated) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-green) 45%, transparent);
   color: var(--neon-green);
   display: flex;
   align-items: center;
@@ -575,7 +565,7 @@ html, body {
 
 .stage-scroll-btn:hover {
   background: var(--neon-green);
-  color: #000000;
+  color: var(--accent-contrast, #FFFFFF);
   box-shadow: 0 0 12px var(--neon-green-glow);
   transform: translateY(-50%) scale(1.08);
 }
@@ -876,10 +866,10 @@ html, body {
 
 @keyframes line-pulse {
   0% {
-    filter: drop-shadow(0 0 16px #00FF87);
+    filter: drop-shadow(0 0 16px var(--neon-green));
   }
   40% {
-    filter: drop-shadow(0 0 20px #00FF87);
+    filter: drop-shadow(0 0 20px var(--neon-green));
   }
   100% {
     filter: drop-shadow(0 0 0px transparent);
@@ -961,7 +951,7 @@ html, body {
 
 .card-live-pill {
   background: var(--neon-green);
-  color: #000000;
+  color: var(--accent-contrast, #FFFFFF);
   font-size: 0.6rem;
   font-weight: 800;
   padding: 1px 5px;
@@ -1109,21 +1099,8 @@ html, body {
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
+  color: var(--stage-color, var(--neon-green));
 }
-
-.list-stage-label.stage-mainstage,
-.list-stage-label.mainstage { color: var(--stage-mainstage); }
-.list-stage-label.stage-f2f,
-.list-stage-label.f2f { color: var(--stage-f2f); }
-.list-stage-label.stage-hidden { color: var(--stage-hidden); }
-.list-stage-label.stage-gotec_main,
-.list-stage-label.gotec_main { color: var(--stage-mainstage); }
-.list-stage-label.stage-gotec_boiler,
-.list-stage-label.gotec_boiler { color: var(--stage-f2f); }
-.list-stage-label.stage-gotec_cube,
-.list-stage-label.gotec_cube { color: var(--stage-hidden); }
-.list-stage-label.stage-elfino,
-.list-stage-label.elfino { color: #F59E0B; }
 
 /* --------------------------------------------------------------------------
    EMPTY STATE
@@ -1286,7 +1263,7 @@ html, body {
 
 .modal-live-pill {
   background: var(--neon-green);
-  color: #000000;
+  color: var(--accent-contrast, #FFFFFF);
   font-size: 0.68rem;
   font-weight: 800;
   padding: 2px 6px;
@@ -1331,9 +1308,9 @@ html, body {
 
 .modal-btn-favorite {
   flex: 1;
-  background: rgba(255, 75, 110, 0.15);
-  border: 1px solid rgba(255, 75, 110, 0.4);
-  color: #FF4B6E;
+  background: color-mix(in srgb, var(--fav-color) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fav-color) 40%, transparent);
+  color: var(--fav-color);
   border-radius: var(--radius-pill);
   padding: 12px;
   font-weight: 700;
@@ -1347,7 +1324,7 @@ html, body {
 }
 
 .modal-btn-favorite.active {
-  background: #FF4B6E;
+  background: var(--fav-color);
   color: #FFFFFF;
 }
 
@@ -1365,7 +1342,7 @@ html, body {
   right: 14px;
   max-width: 480px;
   margin: 0 auto;
-  background: rgba(11, 20, 15, 0.96);
+  background: color-mix(in srgb, var(--bg-surface) 96%, transparent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--neon-green);
@@ -1405,7 +1382,7 @@ html, body {
   height: 34px;
   border-radius: 50%;
   background: var(--neon-green-subtle);
-  border: 1px solid rgba(0, 255, 135, 0.3);
+  border: 1px solid color-mix(in srgb, var(--neon-green) 35%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1461,7 +1438,7 @@ html, body {
 
 .btn-update-reload {
   background: var(--neon-green);
-  color: #050907;
+  color: var(--accent-contrast, #FFFFFF);
   font-family: inherit;
   font-weight: 700;
   font-size: 0.78rem;
@@ -1477,9 +1454,9 @@ html, body {
 
 .btn-update-reload:hover,
 .btn-update-reload:active {
-  background: #20ff98;
+  filter: brightness(1.1);
   transform: scale(1.04);
-  box-shadow: 0 0 16px rgba(0, 255, 135, 0.6);
+  box-shadow: 0 0 16px var(--neon-green-glow);
 }
 
 .btn-update-close {
@@ -1516,7 +1493,7 @@ html, body {
   right: 14px;
   max-width: 480px;
   margin: 0 auto;
-  background: rgba(14, 22, 19, 0.98);
+  background: color-mix(in srgb, var(--bg-surface) 98%, transparent);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--neon-green);
@@ -1653,7 +1630,7 @@ body.is-dragging-timetable .stage-headers-list {
 .disclaimer-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(4, 7, 6, 0.88);
+  background: rgba(4, 5, 8, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -1661,10 +1638,10 @@ body.is-dragging-timetable .stage-headers-list {
 .disclaimer-card {
   position: relative;
   z-index: 10000;
-  background: #0d1411;
+  background: var(--bg-surface);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-lg);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 255, 135, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px color-mix(in srgb, var(--neon-green) 10%, transparent);
   max-width: 440px;
   width: 100%;
   padding: 26px 22px;
@@ -1797,7 +1774,7 @@ body.is-dragging-timetable .stage-headers-list {
   width: 100%;
   height: 48px;
   background: var(--neon-green);
-  color: #040807;
+  color: var(--accent-contrast, #FFFFFF);
   border: none;
   border-radius: var(--radius-pill);
   font-size: 0.92rem;
@@ -1808,20 +1785,20 @@ body.is-dragging-timetable .stage-headers-list {
   justify-content: center;
   gap: 8px;
   cursor: pointer;
-  box-shadow: 0 0 16px rgba(0, 255, 135, 0.35);
+  box-shadow: 0 0 16px var(--neon-green-glow);
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .btn-confirm-disclaimer:active {
   transform: scale(0.97);
-  box-shadow: 0 0 8px rgba(0, 255, 135, 0.2);
+  box-shadow: 0 0 8px var(--neon-green-glow);
 }
 
 @media (hover: hover) {
   .btn-confirm-disclaimer:hover {
-    background: #1aff94;
-    box-shadow: 0 0 22px rgba(0, 255, 135, 0.5);
+    filter: brightness(1.1);
+    box-shadow: 0 0 22px var(--neon-green-glow);
   }
 }
 
@@ -1906,8 +1883,8 @@ body.is-dragging-timetable .stage-headers-list {
 }
 
 .privacy-card-highlight {
-  background: rgba(0, 255, 135, 0.08);
-  border: 1px solid rgba(0, 255, 135, 0.25);
+  background: color-mix(in srgb, var(--neon-green) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-green) 25%, transparent);
   border-radius: var(--radius-md);
   padding: 12px 14px;
   font-size: 0.84rem;
@@ -1973,7 +1950,7 @@ body.is-dragging-timetable .stage-headers-list {
 
 .btn-confirm-privacy:hover,
 .btn-confirm-privacy:active {
-  background: rgba(0, 255, 135, 0.15);
+  background: color-mix(in srgb, var(--neon-green) 15%, transparent);
   box-shadow: 0 0 12px var(--neon-green-glow);
 }
 
@@ -2035,11 +2012,11 @@ body.is-dragging-timetable .stage-headers-list {
   left: 0;
   right: 0;
   z-index: 30000;
-  background: rgba(8, 15, 12, 0.96);
+  background: color-mix(in srgb, var(--bg-surface) 96%, transparent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 2px solid var(--neon-green);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(0, 255, 135, 0.18);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.85), 0 0 25px var(--neon-green-glow);
   padding: calc(env(safe-area-inset-top, 0px) + 10px) 16px 14px;
   animation: slideDownIAB 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   color: var(--text-primary);
@@ -2078,8 +2055,8 @@ body.is-dragging-timetable .stage-headers-list {
 }
 
 .iab-dots-icon {
-  background: rgba(0, 255, 135, 0.15);
-  border: 1px solid rgba(0, 255, 135, 0.4);
+  background: var(--neon-green-subtle);
+  border: 1px solid color-mix(in srgb, var(--neon-green) 40%, transparent);
   padding: 1px 7px;
   border-radius: 6px;
   font-size: 0.85rem;
@@ -2173,7 +2150,7 @@ body.is-dragging-timetable .stage-headers-list {
   gap: 6px;
   padding: 7px 14px;
   background: var(--neon-green);
-  color: #040807;
+  color: var(--accent-contrast, #FFFFFF);
   border: none;
   border-radius: var(--radius-pill);
   font-size: 0.78rem;
@@ -2188,8 +2165,7 @@ body.is-dragging-timetable .stage-headers-list {
 }
 
 .btn-iab-copy.copied {
-  background: #00E676;
-  color: #040807;
+  filter: brightness(1.15);
 }
 
 .btn-iab-intent {

@@ -131,8 +131,10 @@ class TimetableApp {
     const root = document.documentElement;
 
     if (t.accentColor) root.style.setProperty("--neon-green", t.accentColor);
+    if (t.accentContrast) root.style.setProperty("--accent-contrast", t.accentContrast);
     if (t.secondaryColor) root.style.setProperty("--neon-cyan", t.secondaryColor);
     if (t.favoriteColor) root.style.setProperty("--fav-color", t.favoriteColor);
+    if (t.bgBlack) root.style.setProperty("--bg-black", t.bgBlack);
     if (t.bgDark) {
       root.style.setProperty("--bg-dark", t.bgDark);
       document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t.bgDark);
@@ -193,12 +195,10 @@ class TimetableApp {
             const isInsta = link.variant === "instagram" || link.icon === "instagram";
             const iconSvg = this.getLinkIconSvg(link.icon);
             return `
-              <a href="${link.url}" target="_blank" rel="noopener" class="disclaimer-btn ${isInsta ? "disclaimer-btn-insta" : ""}">
+              <a href="${link.url}" target="_blank" rel="noopener" class="disclaimer-btn-link ${isInsta ? "btn-instagram" : ""}">
                 ${iconSvg}
                 <span>${link.label}</span>
-                <svg class="ext-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M7 17L17 7M17 7H7M17 7V17"/>
-                </svg>
+                <span class="btn-arrow">↗</span>
               </a>
             `;
           })
@@ -208,12 +208,12 @@ class TimetableApp {
       if (miniLinks) {
         const miniItems = [];
         if (l.creditsLabel && l.creditsUrl) {
-          miniItems.push(`<a href="${l.creditsUrl}" target="_blank" rel="noopener" class="disclaimer-credit-link">${l.creditsLabel}</a>`);
+          miniItems.push(`<a href="${l.creditsUrl}" target="_blank" rel="noopener" class="btn-mini-textlink">${l.creditsLabel}</a>`);
         }
         if (p.enabled) {
-          miniItems.push(`<button type="button" id="btn-open-privacy" class="disclaimer-privacy-btn">Datenschutz</button>`);
+          miniItems.push(`<button type="button" id="btn-open-privacy" class="btn-mini-textlink">Datenschutz</button>`);
         }
-        miniLinks.innerHTML = miniItems.join('<span class="disclaimer-mini-dot">·</span>');
+        miniLinks.innerHTML = miniItems.join('<span class="mini-links-sep">·</span>');
       }
     }
 
@@ -245,16 +245,16 @@ class TimetableApp {
     // Page Footers
     const footerItems = [];
     if (l.creditsLabel && l.creditsUrl) {
-      footerItems.push(`<a href="${l.creditsUrl}" target="_blank" rel="noopener" class="footer-credit-link">${l.creditsLabel}</a>`);
+      footerItems.push(`<a href="${l.creditsUrl}" target="_blank" rel="noopener" class="btn-mini-textlink">${l.creditsLabel}</a>`);
     }
     if (d.enabled) {
-      footerItems.push(`<button type="button" class="footer-text-btn btn-footer-disclaimer">Offizielle Links & Info</button>`);
+      footerItems.push(`<button type="button" class="btn-mini-textlink btn-footer-disclaimer">Offizielle Links & Info</button>`);
     }
     if (p.enabled) {
-      footerItems.push(`<button type="button" class="footer-text-btn btn-footer-privacy">Datenschutz</button>`);
+      footerItems.push(`<button type="button" class="btn-mini-textlink btn-footer-privacy">Datenschutz</button>`);
     }
 
-    const footerHtml = footerItems.join('<span class="footer-dot">·</span>');
+    const footerHtml = footerItems.join('<span class="mini-links-sep">·</span>');
     document.querySelectorAll(".timetable-footer-inner").forEach((container) => {
       container.innerHTML = footerHtml;
       const parentFooter = container.closest(".timetable-main-footer");
@@ -503,9 +503,12 @@ class TimetableApp {
   getEffectiveCurrentMinutes(isOvernight = false) {
     let mins = this.nowMinutes;
     if (isOvernight) {
+      const dayConf = this.getCurrentDayConfig();
+      const endHour = dayConf?.endHour ?? 12;
+      const cutoffHour = Math.min(12, endHour + 2);
       const hours = Math.floor(mins / 60);
       const remainder = mins % 60;
-      if (hours < 12) {
+      if (hours < cutoffHour) {
         mins = (hours + 24) * 60 + remainder;
       }
     }
