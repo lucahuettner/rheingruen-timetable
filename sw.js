@@ -3,7 +3,7 @@
  * Cache-First Strategy with Network Fallback
  */
 
-const CACHE_NAME = "timetable-pwa-v41";
+const CACHE_NAME = "timetable-pwa-v42";
 
 const PRECACHE_ASSETS = [
   "./",
@@ -21,6 +21,7 @@ const PRECACHE_ASSETS = [
   "./fonts/barlow-latin-700.woff2",
   "./fonts/barlow-latin-800.woff2",
   "./icons/icon.svg",
+  "./icons/bg-speedlines.svg",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/favicon-32x32.png",

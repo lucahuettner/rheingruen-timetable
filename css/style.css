@@ -129,21 +129,33 @@ html, body {
   height: 100dvh;
   width: 100vw;
   background-color: var(--bg-black);
-  background-image: 
-    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--neon-green) 12%, transparent) 0%, transparent 600px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-  background-size: 100% 100%, 32px 32px, 32px 32px;
-  background-position: center top, center top, center top;
   position: relative;
   overflow: hidden;
+}
+
+/* Atmospheric Cyber Speedlines Background Layer */
+.app-bg-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  background-color: #060608;
+  background-image: 
+    radial-gradient(ellipse 90% 550px at 50% -30px, color-mix(in srgb, var(--neon-green) 40%, transparent) 0%, transparent 80%),
+    url('../icons/bg-speedlines.svg'),
+    linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-dark) 40%, var(--bg-black) 100%);
+  background-size: 100% 100%, cover, 100% 100%;
+  background-position: center top, center top, center top;
+  background-repeat: no-repeat;
+  opacity: 1;
 }
 
 /* --------------------------------------------------------------------------
    HEADER
    -------------------------------------------------------------------------- */
 .app-header {
-  background: color-mix(in srgb, var(--bg-dark) 88%, transparent);
+  background: color-mix(in srgb, var(--bg-dark) 82%, transparent);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
@@ -555,7 +567,8 @@ html, body {
   flex: 1;
   overflow: hidden;
   position: relative;
-  background-color: var(--bg-black);
+  background: transparent;
+  z-index: 1;
 }
 
 /* Grid View Container */
@@ -571,9 +584,9 @@ html, body {
 .stage-headers-track {
   position: relative;
   display: flex;
-  background: color-mix(in srgb, var(--bg-surface) 95%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--bg-surface) 86%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 2px solid var(--border-subtle);
   z-index: 30;
   flex-shrink: 0;
@@ -629,7 +642,9 @@ html, body {
   align-items: center;
   justify-content: center;
   border-right: 1px solid var(--border-subtle);
-  background: var(--bg-dark);
+  background: color-mix(in srgb, var(--bg-dark) 85%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .corner-label {
@@ -702,7 +717,9 @@ html, body {
 .time-axis-column {
   width: var(--time-axis-width);
   min-width: var(--time-axis-width);
-  background: var(--bg-dark);
+  background: color-mix(in srgb, var(--bg-dark) 85%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-right: 1px solid var(--border-subtle);
   position: sticky;
   left: 0;
@@ -924,7 +941,9 @@ html, body {
   right: 4px;
   border-radius: var(--radius-md);
   padding: 8px 10px;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--stage-color, transparent) 10%, transparent) 0%, var(--bg-surface-card) 60%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--stage-color, transparent) 14%, transparent) 0%, color-mix(in srgb, var(--bg-surface-card) 92%, transparent) 60%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border: 1px solid var(--border-subtle);
   border-left: 4px solid var(--stage-color, var(--border-subtle));
   cursor: pointer;
@@ -934,6 +953,7 @@ html, body {
   justify-content: space-between;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   user-select: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
 }
 
 .act-card:hover {
