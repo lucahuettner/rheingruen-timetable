@@ -10,6 +10,7 @@ export const EVENT_CONFIG = {
 
   // 1. Branding & Meta-Tags
   branding: {
+    logoImage: "icons/hive-indoor-logo.png",
     title: "HIVE",
     typeLabel: "INDOOR",
     subtitle: "17. OKT · MESSE LEIPZIG",
