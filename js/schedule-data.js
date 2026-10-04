@@ -10,9 +10,9 @@ export const EVENT_CONFIG = {
 
   // 1. Branding & Meta-Tags
   branding: {
-    title: "HIVE INDOOR",
-    subtitle: "17. OKT · MESSE LEIPZIG",
+    title: "HIVE",
     typeLabel: "INDOOR",
+    subtitle: "17. OKT · MESSE LEIPZIG",
     shortName: "HIVE Indoor",
     pageTitle: "Timetable – HIVE Indoor 2026",
     description: "Festival-Zeitplan für das HIVE Indoor 2026 in der Messe Leipzig (Techno Colosseum, Iron Vault, Cargo Bay & Rage Box). 100 % offline nutzbar."

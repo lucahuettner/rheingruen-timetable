@@ -159,7 +159,13 @@ class TimetableApp {
 
     const brandTitleEl = document.getElementById("brand-title");
     const brandSubEl = document.getElementById("brand-subtitle");
-    if (brandTitleEl && b.title) brandTitleEl.textContent = b.title;
+    if (brandTitleEl && b.title) {
+      if (b.typeLabel) {
+        brandTitleEl.innerHTML = `<span class="brand-name">${b.title}</span><span class="brand-pill-tag">${b.typeLabel}</span>`;
+      } else {
+        brandTitleEl.textContent = b.title;
+      }
+    }
     if (brandSubEl && b.subtitle) brandSubEl.textContent = b.subtitle;
 
     // Disclaimer Modal Content
