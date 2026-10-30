@@ -1,7 +1,7 @@
 {
-  "name": "HIVE Indoor 2026 – Timetable",
-  "short_name": "HIVE Indoor",
-  "description": "Zeitplan für das HIVE Indoor 2026 in der Messe Leipzig. Funktioniert 100 % offline mit Live-Uhrzeitanzeige.",
+  "name": "Adrenaline Family Tour · Gotec",
+  "short_name": "Gotec Timetable",
+  "description": "Timetable für die Adrenaline Family Tour im Gotec Club Karlsruhe. Funktioniert 100 % offline mit Live-Uhrzeitanzeige.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
