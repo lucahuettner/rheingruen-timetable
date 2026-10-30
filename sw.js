@@ -3,12 +3,13 @@
  * Cache-First Strategy with Network Fallback
  */
 
-const CACHE_NAME = "timetable-pwa-v49";
+const CACHE_NAME = "timetable-pwa-v50";
 
 const PRECACHE_ASSETS = [
   "./",
   "./index.html",
   "./favicon.ico",
+  "./apple-touch-icon.png",
   "./robots.txt",
   "./css/style.css",
   "./js/schedule-data.js",
