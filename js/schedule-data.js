@@ -1,29 +1,30 @@
 /**
  * Event Timetable Configuration & Schedule Data
  * ============================================================================
- * Konfiguriert für: ADRENALINE – FAMILY TOUR (Gotec Club Karlsruhe)
+ * Konfiguriert für: GOTEC CLUB KARLSRUHE – 31. OKTOBER 2026
+ * "TODAY – NO HALLOWEEN. JUST FINEST TECHNO. 🖤"
  */
 
 export const EVENT_CONFIG = {
   // Eindeutige Event-ID (wird als Präfix für localStorage/sessionStorage verwendet)
-  id: "gotec-adrenaline-2026",
+  id: "gotec-techno-2026-10-31",
 
   // 1. Branding & Meta-Tags
   branding: {
-    title: "ADRENALINE",
-    typeLabel: "GOTEC",
-    subtitle: "30. OKT · GOTEC KARLSRUHE",
+    title: "GOTEC",
+    typeLabel: "CLUB",
+    subtitle: "31. OKT · GOTEC KARLSRUHE",
     shortName: "Gotec Timetable",
-    pageTitle: "Timetable – Adrenaline Family Tour · Gotec",
-    description: "Timetable für die Adrenaline Family Tour im Gotec Club Karlsruhe (Mainfloor, Boiler & Køde). 100 % offline nutzbar."
+    pageTitle: "Timetable – Gotec Club · 31. Okt 2026",
+    description: "Timetable für Gotec Club Karlsruhe (Mainfloor, Boiler & Køde) – 31. Oktober 2026. 100 % offline nutzbar mit Live-Uhrzeit."
   },
 
-  // 2. Farbschema & Zeitraster (Adrenaline Electric Purple, Cyan & Chrome Theme)
+  // 2. Farbschema & Zeitraster (Electric Cyan, Rose & Amber Techno Theme)
   theme: {
-    accentColor: "#A855F7",        // Electric Purple
-    accentContrast: "#FFFFFF",     // Kontrast-Textfarbe auf Haupt-Akzentfarbe
+    accentColor: "#38BDF8",        // Electric Cyan Accent
+    accentContrast: "#000000",     // Kontrast-Textfarbe auf Haupt-Akzentfarbe
     secondaryColor: "#E2E8F0",     // Chrome / Silver
-    favoriteColor: "#A855F7",      // Farbe für Favoriten-Herzen
+    favoriteColor: "#F43F5E",      // Farbe für Favoriten-Herzen
     bgBlack: "#060608",            // App-Außenhintergrund (Deep Obsidian)
     bgDark: "#0A0B0E",             // Haupt-Hintergrund (Industrial Carbon)
     bgSurface: "#111318",          // Header & Listen-Karten
@@ -34,25 +35,25 @@ export const EVENT_CONFIG = {
 
   // 3. Bühnen / Floors (Reihenfolge von links nach rechts im Grid)
   stages: [
-    { id: "mainfloor", name: "Mainfloor", color: "#A855F7" },
-    { id: "boiler", name: "Boiler", color: "#38BDF8" },
-    { id: "kode", name: "Køde", color: "#F43F5E" }
+    { id: "mainfloor", name: "Mainfloor", color: "#38BDF8" },
+    { id: "boiler", name: "Boiler", color: "#F59E0B" },
+    { id: "kode", name: "Køde", color: "#EC4899" }
   ],
 
   // Standardmäßig ausgewählter Tag
-  defaultDayId: "friday",
+  defaultDayId: "saturday",
 
-  // 4. Event-Tage (Da nur 1 durchgehendes Nacht-Event von 22:00 bis 08:00 Uhr existiert,
+  // 4. Event-Tage (Da nur 1 durchgehendes Nacht-Event von 21:00 bis 05:00 Uhr existiert,
   // blendet die App die Tages-Tab-Leiste automatisch aus)
   days: [
     {
-      id: "friday",
-      badge: "FR",
-      title: "Adrenaline",
-      subtitle: "30. OKT",
-      isoDate: "2026-10-30",
-      startHour: 22,
-      endHour: 8
+      id: "saturday",
+      badge: "SA",
+      title: "Gotec Club",
+      subtitle: "31. OKT",
+      isoDate: "2026-10-31",
+      startHour: 21,
+      endHour: 5
     }
   ],
 
@@ -79,37 +80,38 @@ export const EVENT_CONFIG = {
 };
 
 /**
- * Zeitplan-Daten für ADRENALINE FAMILY TOUR @ GOTEC (22:00 – 08:00 Uhr)
+ * Zeitplan-Daten für GOTEC CLUB (21:00 – 05:00 Uhr)
  */
 export const SCHEDULE_DATA = {
-  friday: {
+  saturday: {
     // ========================================================================
-    // MAINFLOOR (22:00 – 08:00)
+    // MAINFLOOR (21:00 – 05:00)
     // ========================================================================
     mainfloor: [
-      { artist: "FLACCO", start: "22:00", end: "01:30" },
-      { artist: "KUKO", start: "01:30", end: "03:00" },
-      { artist: "CLOUDY", start: "03:00", end: "04:30" },
-      { artist: "SUSKA", start: "04:30", end: "06:00" },
-      { artist: "LENE MA RUE", start: "06:00", end: "08:00" }
+      { artist: "VSN22", start: "21:00", end: "23:00" },
+      { artist: "OBSCURE SHAPE", start: "23:00", end: "00:30" },
+      { artist: "CALLUSH", start: "00:30", end: "02:00" },
+      { artist: "CHARLIE SPARKS", start: "02:00", end: "03:30" },
+      { artist: "NEEK", start: "03:30", end: "05:00" }
     ],
 
     // ========================================================================
-    // BOILER (00:00 – 07:00)
+    // BOILER (22:00 – 05:00)
     // ========================================================================
     boiler: [
-      { artist: "VAGABUND", start: "00:00", end: "01:30" },
-      { artist: "ADRIÁN MILLS", start: "01:30", end: "04:30" },
-      { artist: "DANILO FILIPE", start: "04:30", end: "07:00" }
+      { artist: "BTFL", start: "22:00", end: "00:00" },
+      { artist: "DICE", start: "00:00", end: "01:30" },
+      { artist: "ANTONYM", start: "01:30", end: "03:00" },
+      { artist: "NYRA", start: "03:00", end: "05:00" }
     ],
 
     // ========================================================================
-    // KØDE (23:00 – 05:00)
+    // KØDE (00:00 – 05:00)
     // ========================================================================
     kode: [
-      { artist: "LUZINKA", start: "23:00", end: "01:00" },
-      { artist: "GUTKIND", start: "01:00", end: "03:00" },
-      { artist: "PANA", start: "03:00", end: "05:00" }
+      { artist: "PØNTI", start: "00:00", end: "01:30" },
+      { artist: "ALBA FRANCH", start: "01:30", end: "03:00" },
+      { artist: "SAIKA", start: "03:00", end: "05:00" }
     ]
   }
 };

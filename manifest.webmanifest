@@ -1,7 +1,7 @@
 {
-  "name": "Adrenaline Family Tour · Gotec",
+  "name": "Gotec Club · Timetable",
   "short_name": "Gotec Timetable",
-  "description": "Timetable für die Adrenaline Family Tour im Gotec Club Karlsruhe. Funktioniert 100 % offline mit Live-Uhrzeitanzeige.",
+  "description": "Timetable für Gotec Club Karlsruhe (31. Oktober 2026). Funktioniert 100 % offline mit Live-Uhrzeitanzeige.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

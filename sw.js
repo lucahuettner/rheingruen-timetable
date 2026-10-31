@@ -3,7 +3,7 @@
  * Cache-First Strategy with Network Fallback
  */
 
-const CACHE_NAME = "timetable-pwa-v50";
+const CACHE_NAME = "timetable-pwa-v51";
 
 const PRECACHE_ASSETS = [
   "./",
